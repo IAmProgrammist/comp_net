@@ -6,6 +6,9 @@
 #include <wsipx.h>
 #include <stdlib.h>
 #include <conio.h>
+#include <iomanip>
+#include <chrono>
+#include <thread>
 
 #define CLIENT_REQUEST_SIZE 512
 #define IMAGE_PART_SIZE 400
@@ -18,14 +21,15 @@ FILE *source;
 void mainloop() {
     std::cout << "Mainloop started..." << std::endl;
     char* accept_client_data = (char*) malloc(sizeof(char) * CLIENT_REQUEST_SIZE);
-    SOCKADDR_IPX client_sockaddr = {};
-    client_sockaddr.sa_family = AF_IPX;
-    int client_sockaddr_size = sizeof(client_sockaddr);
     bool should_run = true;
     int bytes_read, bytes_sent;
     char* image_buffer = (char*) malloc(sizeof(char) * IMAGE_PART_SIZE);
 
     while(should_run) {
+        SOCKADDR_IPX client_sockaddr = {};
+        client_sockaddr.sa_family = AF_IPX;
+        int client_sockaddr_size = sizeof(client_sockaddr);
+
         if (recvfrom(
                  socket_descriptor,
                  accept_client_data,
@@ -37,13 +41,18 @@ void mainloop() {
             printf("recvfrom failed with error: %d\n", WSAGetLastError());
         } else {
             std::cout << "A request was accepted:\n";
-            std::cout << "Net number: " << ((client_sockaddr.sa_netnum[3]) | ((client_sockaddr.sa_netnum[2]) << 8) | ((client_sockaddr.sa_netnum[1]) << 16) | (client_sockaddr.sa_netnum[0] << 24)) << "\n";
-            std::cout << "Node number: " << ((client_sockaddr.sa_nodenum[5]) | ((client_sockaddr.sa_nodenum[4]) << 8) | ((client_sockaddr.sa_nodenum[3]) << 16) | ((client_sockaddr.sa_nodenum[2]) << 24) | ((client_sockaddr.sa_nodenum[1]) << 32) | ((client_sockaddr.sa_netnum[0] << 40))) << "\n";
+            printf("Net number: %02hhx %02hhx %02hhx %02hhx\n", client_sockaddr.sa_netnum[0], client_sockaddr.sa_netnum[1], client_sockaddr.sa_netnum[2], client_sockaddr.sa_netnum[3]);
+            printf("Node number: %02hhx %02hhx %02hhx %02hhx %02hhx %02hhx\n", client_sockaddr.sa_nodenum[0], client_sockaddr.sa_nodenum[1], client_sockaddr.sa_nodenum[2], client_sockaddr.sa_nodenum[3], client_sockaddr.sa_nodenum[4], client_sockaddr.sa_nodenum[5]);
             std::cout << "Socket num: " << htons(client_sockaddr.sa_socket) << "\n";
             std::cout.flush();
 
             int packages_success = 0, packages_error = 0;
             fseek(source, 0, SEEK_SET);
+
+            std::cout << "Waiting for client to set up..." << std::endl;
+            std::this_thread::sleep_for(std::chrono::milliseconds(100));
+
+            auto a = std::chrono::high_resolution_clock::now();
             while ((bytes_read = fread(image_buffer, 1, sizeof(char) * IMAGE_PART_SIZE, source))) {
                 if (sendto(socket_descriptor,
                        image_buffer,
@@ -51,13 +60,17 @@ void mainloop() {
                        0,
                        (sockaddr*)&client_sockaddr,
                        client_sockaddr_size) == SOCKET_ERROR) {
-                    packages_success++;
-                } else {
                     packages_error++;
+                } else {
+                    packages_success++;
                 }
             }
+            auto b = std::chrono::high_resolution_clock::now();
 
-            std::cout << "Image sent\nSuccessfully sent: " << packages_success << "\nFailed to send: " << packages_error << std::endl;
+            std::cout <<
+            "Image sent\nSuccessfully sent: " << packages_success <<
+            "\nFailed to send: " << packages_error <<
+            "\nTime: " << std::chrono::duration_cast<std::chrono::milliseconds>(b - a).count() / 1000.0 << " s." << std::endl;
         }
 
         if (kbhit()) {
@@ -106,11 +119,9 @@ int main()
 
     int namelen;
     getsockname(socket_descriptor, (sockaddr*)(&name), &namelen);
-    uint64_t node = ((name.sa_nodenum[5]) | ((name.sa_nodenum[4]) << 8) | ((name.sa_nodenum[3]) << 16) | ((name.sa_nodenum[2]) << 24) | ((name.sa_nodenum[1]) << 32) | ((name.sa_netnum[0] << 40)));
-
     std::cout << "Server is inited:\n";
-    std::cout << "Net number: " << ((name.sa_netnum[3]) | ((name.sa_netnum[2]) << 8) | ((name.sa_netnum[1]) << 16) | (name.sa_netnum[0] << 24)) << "\n";
-    std::cout << "Node number: " << std::hex << node << "\n" << std::dec;
+    printf("Net number: %02hhx %02hhx %02hhx %02hhx\n", name.sa_netnum[0], name.sa_netnum[1], name.sa_netnum[2], name.sa_netnum[3]);
+    printf("Node number: %02hhx %02hhx %02hhx %02hhx %02hhx %02hhx\n", name.sa_nodenum[0], name.sa_nodenum[1], name.sa_nodenum[2], name.sa_nodenum[3], name.sa_nodenum[4], name.sa_nodenum[5]);
     std::cout << "Socket num: " << htons(name.sa_socket) << "\n";
     std::cout.flush();
 

@@ -1,5 +1,6 @@
 #define WIN32_LEAN_AND_MEAN
 
+#include <time.h>
 #include <windows.h>
 #include <iostream>
 #include <winsock2.h>
@@ -8,26 +9,24 @@
 #include <conio.h>
 
 #define CLIENT_REQUEST_SIZE 512
-#define IMAGE_PART_SIZE 400
+#define IMAGE_PART_SIZE 546
 
 SOCKET socket_descriptor;
 SOCKADDR_IPX name = {};
+SOCKADDR_IPX server_sockaddr = {};
 
 FILE *source;
 
 void send_request() {
-    uint32_t netnum;
-    uint64_t nodenum;
-    SOCKADDR_IPX server_sockaddr = {};
     auto data = "I need a cat image!";
 
     while (true) {
         std::cout << "Input netnum: ";
         std::cout.flush();
-        std::cin >> netnum;
+        scanf("%02hhx %02hhx %02hhx %02hhx", server_sockaddr.sa_netnum, server_sockaddr.sa_netnum + 1, server_sockaddr.sa_netnum + 2, server_sockaddr.sa_netnum + 3);
         std::cout << "Input nodenum: ";
         std::cout.flush();
-        std::cin >> std::hex >> nodenum >> std::dec;
+        scanf("%02hhx %02hhx %02hhx %02hhx %02hhx %02hhx", server_sockaddr.sa_nodenum, server_sockaddr.sa_nodenum + 1, server_sockaddr.sa_nodenum + 2, server_sockaddr.sa_nodenum + 3, server_sockaddr.sa_nodenum + 4, server_sockaddr.sa_nodenum + 5);
         std::cout << "Input socket: ";
         std::cout.flush();
         std::cin >> server_sockaddr.sa_socket;
@@ -35,26 +34,13 @@ void send_request() {
 
         server_sockaddr.sa_family = AF_IPX;
 
-
-        server_sockaddr.sa_netnum[3] = (netnum >> 24) & 0xFF;
-        server_sockaddr.sa_netnum[2] = (netnum >> 16) & 0xFF;
-        server_sockaddr.sa_netnum[1] = (netnum >> 8) & 0xFF;
-        server_sockaddr.sa_netnum[0] = netnum & 0xFF;
-
-        server_sockaddr.sa_nodenum[5] = (nodenum >> 40) & 0xFF;
-        server_sockaddr.sa_nodenum[4] = (nodenum >> 32) & 0xFF;
-        server_sockaddr.sa_nodenum[3] = (nodenum >> 24) & 0xFF;;
-        server_sockaddr.sa_nodenum[2] = (nodenum >> 16) & 0xFF;;
-        server_sockaddr.sa_nodenum[1] = (nodenum >> 8) & 0xFF;
-        server_sockaddr.sa_nodenum[0] = nodenum & 0xFF;
-
         if (sendto(socket_descriptor,
                    data,
                    sizeof(data),
                    0,
                    (sockaddr*)&server_sockaddr,
                    sizeof(server_sockaddr)) == SOCKET_ERROR) {
-            printf("Unable to connect to server: %d\nTry again", WSAGetLastError());
+            printf("Unable to connect to server: %d\nTry again\n", WSAGetLastError());
         } else {
             return;
         }
@@ -62,6 +48,21 @@ void send_request() {
 }
 
 void mainloop() {
+    std::cout << "Starting file accept..." << std::endl;
+    char* buffer = (char*)malloc(sizeof(char) * IMAGE_PART_SIZE);
+    while (1) {
+        int bytes_received;
+        if (bytes_received = recvfrom(
+                 socket_descriptor,
+                 buffer,
+                 sizeof(char) * IMAGE_PART_SIZE,
+                 0,
+                 nullptr, nullptr) != SOCKET_ERROR) {
+                    fwrite(buffer, 1, sizeof(char) * IMAGE_PART_SIZE, source);
+                 } else {
+                    break;
+                 }
+    }
 }
 
 int main()
@@ -97,13 +98,27 @@ int main()
     getsockname(socket_descriptor, (sockaddr*)(&name), &namelen);
 
     std::cout << "Client is inited:\n";
-    std::cout << "Net number: " << ((name.sa_netnum[3] << 24) | ((name.sa_netnum[2]) << 16) | ((name.sa_netnum[1]) << 8) | (name.sa_netnum[0])) << "\n";
-    std::cout << "Node number: " << ((name.sa_netnum[5] << 40) | ((name.sa_netnum[4]) << 32) | ((name.sa_netnum[3]) << 24) | ((name.sa_netnum[2]) << 16) | ((name.sa_netnum[1]) << 8) | ((name.sa_netnum[0]))) << "\n";
+    printf("Net number: %02hhx %02hhx %02hhx %02hhx\n", name.sa_netnum[0], name.sa_netnum[1], name.sa_netnum[2], name.sa_netnum[3]);
+    printf("Node number: %02hhx %02hhx %02hhx %02hhx %02hhx %02hhx\n", name.sa_nodenum[0], name.sa_nodenum[1], name.sa_nodenum[2], name.sa_nodenum[3], name.sa_nodenum[4], name.sa_nodenum[5]);
     std::cout << "Socket num: " << htons(name.sa_socket) << "\n";
     std::cout.flush();
 
+    int timeout_time = 4000;
+
+    if (setsockopt(socket_descriptor, SOL_SOCKET, SO_RCVTIMEO, (char*) &timeout_time, sizeof(timeout_time)) == SOCKET_ERROR) {
+        printf("Unable to set timeout: %d\n", WSAGetLastError());
+        return 1;
+    }
+
+    srand(time(NULL));
+    sprintf(filename, "img%d.jpg", rand() % 100 + 1);
+    source = fopen(filename, "wb");
+
     send_request();
     mainloop();
+
+    fflush(source);
+    fclose(source);
 
     err = WSACleanup();
 
@@ -113,6 +128,9 @@ int main()
     }
 
     closesocket(socket_descriptor);
+
+    std::cout << "A file was saved at " << filename << "\nPress any button to exit" << std::endl;
+    getchar();
 
     std::cout << "Have a good day!" << std::endl;
 

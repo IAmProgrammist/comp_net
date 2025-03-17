@@ -12,6 +12,7 @@
 
 #define CLIENT_REQUEST_SIZE 512
 #define IMAGE_PART_SIZE 400
+#define IPX_SOCKET (0x8060)
 
 SOCKET socket_descriptor;
 SOCKADDR_IPX name = {};
@@ -19,69 +20,52 @@ SOCKADDR_IPX name = {};
 FILE *source;
 
 void mainloop() {
-    std::cout << "Mainloop started..." << std::endl;
-    char* accept_client_data = (char*) malloc(sizeof(char) * CLIENT_REQUEST_SIZE);
     bool should_run = true;
-    int bytes_read, bytes_sent;
-    char* image_buffer = (char*) malloc(sizeof(char) * IMAGE_PART_SIZE);
+    int bytes_read;
 
     while(should_run) {
+        std::string input;
+        std::cout << "Input Y to send file\nType anything else to stop server: ";
+        std::cout.flush();
+        std::cin >> input;
+
+        if (input != "Y") {
+            break;
+        }
+
         SOCKADDR_IPX client_sockaddr = {};
         client_sockaddr.sa_family = AF_IPX;
+        memset(client_sockaddr.sa_netnum, 0, 4);
+        memset(client_sockaddr.sa_nodenum, 0xFF, 6);
+        client_sockaddr.sa_socket = htons(IPX_SOCKET);
+
         int client_sockaddr_size = sizeof(client_sockaddr);
 
-        if (recvfrom(
-                 socket_descriptor,
-                 accept_client_data,
-                 sizeof(char) * CLIENT_REQUEST_SIZE,
-                 0,
-                 (sockaddr*)&client_sockaddr,
-                 &client_sockaddr_size
-                 ) == SOCKET_ERROR) {
-            printf("recvfrom failed with error: %d\n", WSAGetLastError());
-        } else {
-            std::cout << "A request was accepted:\n";
-            printf("Net number: %02hhx %02hhx %02hhx %02hhx\n", client_sockaddr.sa_netnum[0], client_sockaddr.sa_netnum[1], client_sockaddr.sa_netnum[2], client_sockaddr.sa_netnum[3]);
-            printf("Node number: %02hhx %02hhx %02hhx %02hhx %02hhx %02hhx\n", client_sockaddr.sa_nodenum[0], client_sockaddr.sa_nodenum[1], client_sockaddr.sa_nodenum[2], client_sockaddr.sa_nodenum[3], client_sockaddr.sa_nodenum[4], client_sockaddr.sa_nodenum[5]);
-            std::cout << "Socket num: " << htons(client_sockaddr.sa_socket) << "\n";
-            std::cout.flush();
+        int packages_success = 0, packages_error = 0;
+        fseek(source, 0, SEEK_SET);
 
-            int packages_success = 0, packages_error = 0;
-            fseek(source, 0, SEEK_SET);
+        auto a = std::chrono::high_resolution_clock::now();
+        char image_buffer[IMAGE_PART_SIZE];
 
-            std::cout << "Waiting for client to set up..." << std::endl;
-            std::this_thread::sleep_for(std::chrono::milliseconds(100));
-
-            auto a = std::chrono::high_resolution_clock::now();
-            while ((bytes_read = fread(image_buffer, 1, sizeof(char) * IMAGE_PART_SIZE, source))) {
-                if (sendto(socket_descriptor,
-                       image_buffer,
-                       bytes_read,
-                       0,
-                       (sockaddr*)&client_sockaddr,
-                       client_sockaddr_size) == SOCKET_ERROR) {
-                    packages_error++;
-                } else {
-                    packages_success++;
-                }
+        while ((bytes_read = fread(image_buffer, sizeof(char), IMAGE_PART_SIZE, source))) {
+            if (sendto(socket_descriptor,
+                   image_buffer,
+                   bytes_read,
+                   0,
+                   (sockaddr*)&client_sockaddr,
+                   client_sockaddr_size) == SOCKET_ERROR) {
+                packages_error++;
+            } else {
+                packages_success++;
             }
-            auto b = std::chrono::high_resolution_clock::now();
-
-            std::cout <<
-            "Image sent\nSuccessfully sent: " << packages_success <<
-            "\nFailed to send: " << packages_error <<
-            "\nTime: " << std::chrono::duration_cast<std::chrono::milliseconds>(b - a).count() / 1000.0 << " s." << std::endl;
         }
+        auto b = std::chrono::high_resolution_clock::now();
 
-        if (kbhit()) {
-            should_run = false;
-        }
+        std::cout <<
+        "Image sent\nSuccessfully sent: " << packages_success <<
+        "\nFailed to send: " << packages_error <<
+        "\nTime: " << std::chrono::duration_cast<std::chrono::milliseconds>(b - a).count() / 1000.0 << " s." << std::endl;
     }
-
-    std::cout << "Mainloop prevented" << std::endl;
-
-    free(image_buffer);
-    free(accept_client_data);
 }
 
 int main()
@@ -117,13 +101,16 @@ int main()
         return 1;
     }
 
-    int namelen;
+    int namelen = sizeof(name);
     getsockname(socket_descriptor, (sockaddr*)(&name), &namelen);
-    std::cout << "Server is inited:\n";
-    printf("Net number: %02hhx %02hhx %02hhx %02hhx\n", name.sa_netnum[0], name.sa_netnum[1], name.sa_netnum[2], name.sa_netnum[3]);
-    printf("Node number: %02hhx %02hhx %02hhx %02hhx %02hhx %02hhx\n", name.sa_nodenum[0], name.sa_nodenum[1], name.sa_nodenum[2], name.sa_nodenum[3], name.sa_nodenum[4], name.sa_nodenum[5]);
-    std::cout << "Socket num: " << htons(name.sa_socket) << "\n";
-    std::cout.flush();
+    std::cout << "Server is inited" << std::endl;
+
+    bool broadcast = true;
+    if (setsockopt(socket_descriptor, SOL_SOCKET, SO_BROADCAST, (char*)&broadcast, sizeof(broadcast)) == SOCKET_ERROR) {
+        printf("Unable to set broadcast\n");
+        closesocket(socket_descriptor);
+        WSACleanup();
+    }
 
     mainloop();
 

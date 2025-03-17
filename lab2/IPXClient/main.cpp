@@ -29,7 +29,7 @@ void mainloop() {
                  sizeof(char) * IMAGE_PART_SIZE,
                  0,
                  nullptr, nullptr)) != SOCKET_ERROR) {
-                    fwrite(buffer, sizeof(char), IMAGE_PART_SIZE, source);
+                    fwrite(buffer, sizeof(char), bytes_received, source);
                  } else {
                     break;
                  }

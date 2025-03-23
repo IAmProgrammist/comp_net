@@ -8,7 +8,7 @@
 Client::Client() {
 	std::clog << "Creating socket" << std::endl;
 
-	// Создаём сокет
+	// РЎРѕР·РґР°С‘Рј СЃРѕРєРµС‚
 	this->socket_descriptor = socket(
 		AF_INET,
 		SOCK_DGRAM,
@@ -16,20 +16,20 @@ Client::Client() {
 	);
 
 	std::clog << "Making socket broadcast" << std::endl;
-	// Делаем сокет способным к широковещательному каналу
+	// Р”РµР»Р°РµРј СЃРѕРєРµС‚ СЃРїРѕСЃРѕР±РЅС‹Рј Рє С€РёСЂРѕРєРѕРІРµС‰Р°С‚РµР»СЊРЅРѕРјСѓ РєР°РЅР°Р»Сѓ
 	int timeout_ms = 10000;
 	if (setsockopt(this->socket_descriptor, SOL_SOCKET, SO_RCVTIMEO, (char*)&timeout_ms, sizeof(timeout_ms)) == SOCKET_ERROR)
 		throw std::runtime_error(getErrorTextWithWSAErrorCode("Unable to make socket broadcast"));
 
 	std::clog << "Creating socket bind addr" << std::endl;
-	// Создаём адрес к которому привяжется сокет
+	// РЎРѕР·РґР°С‘Рј Р°РґСЂРµСЃ Рє РєРѕС‚РѕСЂРѕРјСѓ РїСЂРёРІСЏР¶РµС‚СЃСЏ СЃРѕРєРµС‚
 	sockaddr_in bind_addr;
 	bind_addr.sin_family = AF_INET;
 	bind_addr.sin_addr = getDeviceAddrInfo().sin_addr;
 	bind_addr.sin_port = htons(CLIENT_DEFAULT_PORT);
 
 	std::clog << "Binding socket" << std::endl;
-	// Привязать сокет к адресу
+	// РџСЂРёРІСЏР·Р°С‚СЊ СЃРѕРєРµС‚ Рє Р°РґСЂРµСЃСѓ
 	if (bind(this->socket_descriptor, (sockaddr*)&bind_addr, sizeof(bind_addr)) == SOCKET_ERROR)
 		throw std::runtime_error(getErrorTextWithWSAErrorCode("Unable to bind socket descriptor"));
 }
@@ -43,19 +43,19 @@ Client::~Client() {
 	delete this->current_runner;
 
 	std::clog << "Closing socket" << std::endl;
-	// Закрываем сокет
+	// Р—Р°РєСЂС‹РІР°РµРј СЃРѕРєРµС‚
 	if (closesocket(this->socket_descriptor) == SOCKET_ERROR)
 		throw std::runtime_error(getErrorTextWithWSAErrorCode("Unable to close socket"));
 }
 
 void Client::request(char* payload, int payload_size) {
-	// Если клиент уже работает, выходим из него
+	// Р•СЃР»Рё РєР»РёРµРЅС‚ СѓР¶Рµ СЂР°Р±РѕС‚Р°РµС‚, РІС‹С…РѕРґРёРј РёР· РЅРµРіРѕ
 	if (this->running) {
 		std::clog << "Client is already running" << std::endl;
 		return;
 	}
 
-	// Подготавливаем рабочий поток
+	// РџРѕРґРіРѕС‚Р°РІР»РёРІР°РµРј СЂР°Р±РѕС‡РёР№ РїРѕС‚РѕРє
 	delete this->current_runner;
 
 	std::clog << "Starting client" << std::endl;
@@ -63,7 +63,7 @@ void Client::request(char* payload, int payload_size) {
 	this->temporary_data.clear();
 
 	this->current_runner = new std::thread([this]() {
-		// Устанавливаем флаг работы потока на true
+		// РЈСЃС‚Р°РЅР°РІР»РёРІР°РµРј С„Р»Р°Рі СЂР°Р±РѕС‚С‹ РїРѕС‚РѕРєР° РЅР° true
 		this->running = true;
 
 		char buffer[IMAGE_FRAGMENT_SIZE];
@@ -71,7 +71,7 @@ void Client::request(char* payload, int payload_size) {
 
 		auto a = std::chrono::high_resolution_clock::now();
 
-		// Получаем сегменты и сохраняем их в буфер
+		// РџРѕР»СѓС‡Р°РµРј СЃРµРіРјРµРЅС‚С‹ Рё СЃРѕС…СЂР°РЅСЏРµРј РёС… РІ Р±СѓС„РµСЂ
 		while (should_run && (bytes_received = recvfrom(
 			this->socket_descriptor,
 			buffer,
@@ -87,7 +87,7 @@ void Client::request(char* payload, int payload_size) {
 		std::clog << "Answer accepted\n" <<
 			"\nTime: " << std::chrono::duration_cast<std::chrono::milliseconds>(b - a).count() / 1000.0 << " s." << std::endl;
 
-		// Устанавливаем флаг работы потока на false
+		// РЈСЃС‚Р°РЅР°РІР»РёРІР°РµРј С„Р»Р°Рі СЂР°Р±РѕС‚С‹ РїРѕС‚РѕРєР° РЅР° false
 		this->running = false;
 	});
 
@@ -113,8 +113,8 @@ void Client::shutdown() {
 		return;
 	}
 
-	// Указываем что клиенту нужно приостановиться
-	// и ждём пока он остановится
+	// РЈРєР°Р·С‹РІР°РµРј С‡С‚Рѕ РєР»РёРµРЅС‚Сѓ РЅСѓР¶РЅРѕ РїСЂРёРѕСЃС‚Р°РЅРѕРІРёС‚СЊСЃСЏ
+	// Рё Р¶РґС‘Рј РїРѕРєР° РѕРЅ РѕСЃС‚Р°РЅРѕРІРёС‚СЃСЏ
 	std::clog << "Stopping client" << std::endl;
 	this->should_run = false;
 
@@ -123,7 +123,7 @@ void Client::shutdown() {
 	delete this->current_runner;
 }
 
-// Отобразить информацию о клиенте
+// РћС‚РѕР±СЂР°Р·РёС‚СЊ РёРЅС„РѕСЂРјР°С†РёСЋ Рѕ РєР»РёРµРЅС‚Рµ
 std::ostream& Client::printClientInfo(std::ostream& out) {
 	sockaddr_in client_address;
 	int client_address_size = sizeof(client_address);

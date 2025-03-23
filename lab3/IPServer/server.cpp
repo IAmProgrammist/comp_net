@@ -10,14 +10,14 @@
 
 Server::Server(std::string file_path, int port) {
 	std::clog << "Opening file " << file_path << std::endl;
-	// Открываем файл
+	// РћС‚РєСЂС‹РІР°РµРј С„Р°Р№Р»
 	this->file = new std::ifstream(file_path, std::ios::binary);
 	if (!this->file->is_open())
 		throw std::runtime_error("Unable to open file for read " + file_path);
 
 	std::clog << "Creating socket" << std::endl;
 
-	// Создаём сокет
+	// РЎРѕР·РґР°С‘Рј СЃРѕРєРµС‚
 	this->socket_descriptor = socket(
 		AF_INET,
 		SOCK_DGRAM,
@@ -25,20 +25,20 @@ Server::Server(std::string file_path, int port) {
 	);
 
 	std::clog << "Making socket broadcast" << std::endl;
-	// Делаем сокет способным к широковещательному каналу
+	// Р”РµР»Р°РµРј СЃРѕРєРµС‚ СЃРїРѕСЃРѕР±РЅС‹Рј Рє С€РёСЂРѕРєРѕРІРµС‰Р°С‚РµР»СЊРЅРѕРјСѓ РєР°РЅР°Р»Сѓ
 	bool broadcast = true;
 	if (setsockopt(this->socket_descriptor, SOL_SOCKET, SO_BROADCAST, (char*)&broadcast, sizeof(broadcast)) == SOCKET_ERROR)
 		throw std::runtime_error(getErrorTextWithWSAErrorCode("Unable to make socket broadcast"));
 
 	std::clog << "Creating socket bind addr" << std::endl;
-	// Создаём адрес к которому привяжется сокет
+	// РЎРѕР·РґР°С‘Рј Р°РґСЂРµСЃ Рє РєРѕС‚РѕСЂРѕРјСѓ РїСЂРёРІСЏР¶РµС‚СЃСЏ СЃРѕРєРµС‚
 	sockaddr_in bind_addr;
 	bind_addr.sin_family = AF_INET;
 	bind_addr.sin_addr = getDeviceAddrInfo().sin_addr;
 	bind_addr.sin_port = htons(port);
 
 	std::clog << "Binding socket" << std::endl;
-	// Привязать сокет к адресу
+	// РџСЂРёРІСЏР·Р°С‚СЊ СЃРѕРєРµС‚ Рє Р°РґСЂРµСЃСѓ
 	if (bind(this->socket_descriptor, (sockaddr*)&bind_addr, sizeof(bind_addr)) == SOCKET_ERROR)
 		throw std::runtime_error(getErrorTextWithWSAErrorCode("Unable to bind socket descriptor"));
 }
@@ -52,12 +52,12 @@ Server::~Server() {
 	delete this->current_runner;
 
 	std::clog << "Closing file" << std::endl;
-	// Закрываем файл
+	// Р—Р°РєСЂС‹РІР°РµРј С„Р°Р№Р»
 	this->file->close();
 	delete this->file;
 
 	std::clog << "Closing socket" << std::endl;
-	// Закрываем сокет
+	// Р—Р°РєСЂС‹РІР°РµРј СЃРѕРєРµС‚
 	if (closesocket(this->socket_descriptor) == SOCKET_ERROR)
 		throw std::runtime_error(getErrorTextWithWSAErrorCode("Unable to close socket"));
 }
@@ -85,20 +85,20 @@ std::ostream& Server::printServerInfo(std::ostream& out) {
 }
 
 void Server::start() {
-	// Если сервер уже работает, выходим из него
+	// Р•СЃР»Рё СЃРµСЂРІРµСЂ СѓР¶Рµ СЂР°Р±РѕС‚Р°РµС‚, РІС‹С…РѕРґРёРј РёР· РЅРµРіРѕ
 	if (this->running) {
 		std::clog << "Server is already running" << std::endl;
 		return;
 	}
 
-	// Подготавливаем рабочий поток
+	// РџРѕРґРіРѕС‚Р°РІР»РёРІР°РµРј СЂР°Р±РѕС‡РёР№ РїРѕС‚РѕРє
 	delete this->current_runner;
 
 	std::clog << "Starting server" << std::endl;
 	this->should_run = true;
 
 	this->current_runner = new std::thread([this]() {
-		// Устанавливаем флаг работы потока на true
+		// РЈСЃС‚Р°РЅР°РІР»РёРІР°РµРј С„Р»Р°Рі СЂР°Р±РѕС‚С‹ РїРѕС‚РѕРєР° РЅР° true
 		this->running = true;
 
 		this->file->clear();
@@ -106,7 +106,7 @@ void Server::start() {
 		char buffer[IMAGE_FRAGMENT_SIZE];
 		int packages_success = 0, packages_failed = 0;
 
-		// Конструируем широковещательный sockaddr_in
+		// РљРѕРЅСЃС‚СЂСѓРёСЂСѓРµРј С€РёСЂРѕРєРѕРІРµС‰Р°С‚РµР»СЊРЅС‹Р№ sockaddr_in
 		sockaddr_in client_sockaddr;
 		client_sockaddr.sin_family = AF_INET;
 		client_sockaddr.sin_port = htons(CLIENT_DEFAULT_PORT);
@@ -114,13 +114,13 @@ void Server::start() {
 		
 		auto a = std::chrono::high_resolution_clock::now();
 
-		// Пока поток должен работать и не достигнут конец файла
+		// РџРѕРєР° РїРѕС‚РѕРє РґРѕР»Р¶РµРЅ СЂР°Р±РѕС‚Р°С‚СЊ Рё РЅРµ РґРѕСЃС‚РёРіРЅСѓС‚ РєРѕРЅРµС† С„Р°Р№Р»Р°
 		while (this->should_run && !this->file->eof()) {
-			// Считать файл
+			// РЎС‡РёС‚Р°С‚СЊ С„Р°Р№Р»
 			this->file->read(buffer, sizeof(buffer));
 			int bytes_read = this->file->gcount();
 
-			// Отправить фрагмент
+			// РћС‚РїСЂР°РІРёС‚СЊ С„СЂР°РіРјРµРЅС‚
 			if (sendto(
 				this->socket_descriptor,
 				buffer,
@@ -141,7 +141,7 @@ void Server::start() {
 			<< packages_failed << "\nPackages sent: " << packages_success <<
 			"\nTime: " << std::chrono::duration_cast<std::chrono::milliseconds>(b - a).count() / 1000.0 << " s." << std::endl;
 
-		// Устанавливаем флаг работы потока на false
+		// РЈСЃС‚Р°РЅР°РІР»РёРІР°РµРј С„Р»Р°Рі СЂР°Р±РѕС‚С‹ РїРѕС‚РѕРєР° РЅР° false
 		this->running = false;
 	});
 
@@ -154,8 +154,8 @@ void Server::shutdown() {
 		return;
 	}
 
-	// Указываем что серверу нужно приостановиться
-	// и ждём пока он остановится
+	// РЈРєР°Р·С‹РІР°РµРј С‡С‚Рѕ СЃРµСЂРІРµСЂСѓ РЅСѓР¶РЅРѕ РїСЂРёРѕСЃС‚Р°РЅРѕРІРёС‚СЊСЃСЏ
+	// Рё Р¶РґС‘Рј РїРѕРєР° РѕРЅ РѕСЃС‚Р°РЅРѕРІРёС‚СЃСЏ
 	std::clog << "Stopping server" << std::endl;
 	this->should_run = false;
 
@@ -165,8 +165,8 @@ void Server::shutdown() {
 }
 
 void Server::wait_for_server_stop() {
-	// Используем спинлок, так как пакеты относительно небольшие и сервер должен 
-	// быстро увидеть что пора заканчивать работу
+	// РСЃРїРѕР»СЊР·СѓРµРј СЃРїРёРЅР»РѕРє, С‚Р°Рє РєР°Рє РїР°РєРµС‚С‹ РѕС‚РЅРѕСЃРёС‚РµР»СЊРЅРѕ РЅРµР±РѕР»СЊС€РёРµ Рё СЃРµСЂРІРµСЂ РґРѕР»Р¶РµРЅ 
+	// Р±С‹СЃС‚СЂРѕ СѓРІРёРґРµС‚СЊ С‡С‚Рѕ РїРѕСЂР° Р·Р°РєР°РЅС‡РёРІР°С‚СЊ СЂР°Р±РѕС‚Сѓ
 	while (this->running) {
 	}
 }

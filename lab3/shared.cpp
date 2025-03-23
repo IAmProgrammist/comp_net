@@ -59,7 +59,7 @@ std::ostream& printSockaddrInfo(std::ostream& out, sockaddr_in& sock) {
 }
 
 sockaddr_in getDeviceAddrInfo() {
-    // Получить имя текущего устройства
+    // РџРѕР»СѓС‡РёС‚СЊ РёРјСЏ С‚РµРєСѓС‰РµРіРѕ СѓСЃС‚СЂРѕР№СЃС‚РІР°
     char host_name[256] = {};
     if (gethostname(host_name, sizeof(host_name)) == SOCKET_ERROR)
         throw std::runtime_error(getErrorTextWithWSAErrorCode("Unable to get host name"));
@@ -71,14 +71,14 @@ sockaddr_in getDeviceAddrInfo() {
     hints.ai_protocol = IPPROTO_TCP;
     struct addrinfo* result = NULL;
 
-    // Получить информацию об адресах на устройстве в сети
+    // РџРѕР»СѓС‡РёС‚СЊ РёРЅС„РѕСЂРјР°С†РёСЋ РѕР± Р°РґСЂРµСЃР°С… РЅР° СѓСЃС‚СЂРѕР№СЃС‚РІРµ РІ СЃРµС‚Рё
     DWORD dwRetval = getaddrinfo(host_name, "", &hints, &result);
     if (dwRetval != 0) {
         throw std::runtime_error(getErrorTextWithWSAErrorCode("Getaddrinfo failed for device host name"));
     }
 
     for (addrinfo* ptr = result; ptr != NULL; ptr = ptr->ai_next) {
-        // Если адрес для устройства является IPv4 адресом, мы нашли нужный адрес, возвращаем его
+        // Р•СЃР»Рё Р°РґСЂРµСЃ РґР»СЏ СѓСЃС‚СЂРѕР№СЃС‚РІР° СЏРІР»СЏРµС‚СЃСЏ IPv4 Р°РґСЂРµСЃРѕРј, РјС‹ РЅР°С€Р»Рё РЅСѓР¶РЅС‹Р№ Р°РґСЂРµСЃ, РІРѕР·РІСЂР°С‰Р°РµРј РµРіРѕ
         if (ptr->ai_family == AF_INET) {
             sockaddr_in device_sockaddr = {};
             memcpy(&device_sockaddr, ptr->ai_addr, sizeof(device_sockaddr));
@@ -95,13 +95,13 @@ void loadWSA() {
     WSADATA wsaData;
     wVersionRequested = MAKEWORD(2, 0);
 
-    // Загрузить библиотеку WinSock
+    // Р—Р°РіСЂСѓР·РёС‚СЊ Р±РёР±Р»РёРѕС‚РµРєСѓ WinSock
     if (WSAStartup(wVersionRequested, &wsaData) == SOCKET_ERROR)
         throw std::runtime_error(getErrorTextWithWSAErrorCode("Unable to load WSA library"));
 }
 
 void unloadWSA() {
-    // Выгрузить библиотеку WinSock
+    // Р’С‹РіСЂСѓР·РёС‚СЊ Р±РёР±Р»РёРѕС‚РµРєСѓ WinSock
     if (WSACleanup() == SOCKET_ERROR)
         throw std::runtime_error(getErrorTextWithWSAErrorCode("Unable to unload WSA library"));
 }

@@ -7,15 +7,15 @@
 #define CLIENT_DEFAULT_PORT 12484
 #define IMAGE_FRAGMENT_SIZE 508
 
-// Формирует текст ошибки вместе с WSA кодом
+// Р¤РѕСЂРјРёСЂСѓРµС‚ С‚РµРєСЃС‚ РѕС€РёР±РєРё РІРјРµСЃС‚Рµ СЃ WSA РєРѕРґРѕРј
 std::string getErrorTextWithWSAErrorCode(std::string errorText);
-// Выводит информацию о структуре sockaddr
+// Р’С‹РІРѕРґРёС‚ РёРЅС„РѕСЂРјР°С†РёСЋ Рѕ СЃС‚СЂСѓРєС‚СѓСЂРµ sockaddr
 std::ostream& printSockaddrInfo(std::ostream& out, sockaddr_in& sock);
-// Возвращает IP адрес для текущего ПК
+// Р’РѕР·РІСЂР°С‰Р°РµС‚ IP Р°РґСЂРµСЃ РґР»СЏ С‚РµРєСѓС‰РµРіРѕ РџРљ
 sockaddr_in getDeviceAddrInfo();
-// Загружает WSA
+// Р—Р°РіСЂСѓР¶Р°РµС‚ WSA
 void loadWSA();
-// Выгружает WSA
+// Р’С‹РіСЂСѓР¶Р°РµС‚ WSA
 void unloadWSA();
-// Возвращает неконфликтующее имя для текущего файла
+// Р’РѕР·РІСЂР°С‰Р°РµС‚ РЅРµРєРѕРЅС„Р»РёРєС‚СѓСЋС‰РµРµ РёРјСЏ РґР»СЏ С‚РµРєСѓС‰РµРіРѕ С„Р°Р№Р»Р°
 std::string getUniqueFilepath();

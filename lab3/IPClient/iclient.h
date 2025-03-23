@@ -1,6 +1,7 @@
 #pragma once
 
 #include <string>
+#include <vector>
 
 class IClient {
 public:
@@ -8,12 +9,16 @@ public:
 	IClient();
 	// Освобождает ресурсы клиента
 	virtual ~IClient();
+	// Приостановить работу клиента
+	virtual void shutdown() = 0;
 	// Запрашивает данные с клиента
 	void request();
 	// Запрашивает данные с клиента с дополнительной отправкой данных
 	virtual void request(char* payload, int payload_size) = 0;
-	// Сохраняет данные полученные от сервера
-	virtual std::string save() = 0;
+	// Возвращает true если ответ принят
+	virtual bool isReady() = 0;
+	// Возвращает true если ответ принят
+	virtual const std::vector<char>& getAnswer() = 0;
 	// Отобразить информацию о клиенте
 	virtual std::ostream& printClientInfo(std::ostream& out) = 0;
 

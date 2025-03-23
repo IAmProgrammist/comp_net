@@ -29,7 +29,7 @@ int main() {
 			std::cin >> input;
 			if (input == "Y") {
 				// Запустить сервер
-				s->start();
+				//s->start();
 			}
 			else if (input == "N") {
 				// Приостановить сервер
@@ -41,7 +41,7 @@ int main() {
 			}
 			else if (input == "S") {
 				// Вывести информацию о сервере
-				s->printServerInfo(std::cout);
+				//s->printServerInfo(std::cout);
 			}
 		}
 
@@ -57,7 +57,7 @@ int main() {
 	}
 
 	// Выгрузка библиотеки WSA
-	IServer::detach();
+	IClient::detach();
 
 
 	return 0;

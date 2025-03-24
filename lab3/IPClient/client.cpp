@@ -79,7 +79,7 @@ void Client::request(char* payload, int payload_size) {
 		auto b = std::chrono::high_resolution_clock::now();
 
 		std::clog << "Answer accepted\n" <<
-			"\nTime: " << std::chrono::duration_cast<std::chrono::milliseconds>(b - a).count() / 1000.0 << " s." << std::endl;
+			"Time: " << std::chrono::duration_cast<std::chrono::milliseconds>(b - a).count() / 1000.0 << " s." << std::endl;
 
 		// Устанавливаем флаг работы потока на false
 		this->running = false;
@@ -120,19 +120,30 @@ std::ostream& Client::printClientInfo(std::ostream& out) {
 	int client_address_size = sizeof(client_address);
 	int get_sock_name_res = getsockname(this->socket_descriptor, (sockaddr*)&client_address, &client_address_size);
 
-	std::cout << "Welcome to IP client!\n" <<
+	out << "IP client info:\n" <<
 		"Client state: " << (this->running ? "running" : "not running") << "\n";
 
 	if (get_sock_name_res == SOCKET_ERROR) {
-		std::cout << "Unable to get socket info\n";
+		out << "Unable to get socket info\n";
 	}
 	else {
-		std::cout << "Socket info:\n";
-		printSockaddrInfo(std::cout, client_address);
-		std::cout << "\n";
+		out << "Socket info:\n";
+		printSockaddrInfo(out, client_address);
+		out << "\n";
 	}
 
-	std::cout.flush();
+	out.flush();
+
+	return out;
+}
+
+std::ostream& Client::printAnswerInfo(std::ostream& out) {
+	out << "Answer info:\n" << "  Size:\n";
+	out << "    " << this->temporary_data.size() << " B\n";
+	out << "    " << this->temporary_data.size() / 1024.0 << " KiB\n";
+	out << "    " << this->temporary_data.size() / 1024.0 / 1024.0 << " MiB\n";
+
+	out.flush();
 
 	return out;
 }

@@ -28,4 +28,6 @@ public:
 	const std::vector<char>& getAnswer();
 	// Отобразить информацию о клиенте
 	std::ostream& printClientInfo(std::ostream& out);
+	// Отобразить информацию о файле
+	std::ostream& printAnswerInfo(std::ostream& out);
 };

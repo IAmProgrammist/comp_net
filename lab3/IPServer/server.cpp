@@ -64,7 +64,7 @@ std::ostream& Server::printServerInfo(std::ostream& out) {
 	int server_address_size = sizeof(server_address);
 	int get_sock_name_res = getsockname(this->socket_descriptor, (sockaddr*)&server_address, &server_address_size);
 
-	std::cout << "Welcome to IP server!\n" <<
+	std::cout << "IP server info:\n" <<
 		"Server state: " << (this->running ? "running" : "not running") << "\n";
 
 	if (get_sock_name_res == SOCKET_ERROR) {
@@ -111,6 +111,8 @@ void Server::start() {
 		memset(((char*)&client_sockaddr.sin_addr) + 1, 0xA8, 1);
 		memset(((char*)&client_sockaddr.sin_addr) + 2, 0x01, 1);
 		memset(((char*)&client_sockaddr.sin_addr) + 3, 0xff, 1);
+
+		int total_bytes = 0;
 		
 		auto a = std::chrono::high_resolution_clock::now();
 
@@ -119,6 +121,7 @@ void Server::start() {
 			// Считать файл
 			this->file->read(buffer, sizeof(buffer));
 			int bytes_read = this->file->gcount();
+			total_bytes += bytes_read;
 
 			// Отправить фрагмент
 			if (sendto(
@@ -138,9 +141,13 @@ void Server::start() {
 
 		auto b = std::chrono::high_resolution_clock::now();
 
-		std::clog << "A file broadcasted ended\nPackages failed: "
-			<< packages_failed << "\nPackages sent: " << packages_success <<
-			"\nTime: " << std::chrono::duration_cast<std::chrono::milliseconds>(b - a).count() / 1000.0 << " s." << std::endl;
+		std::clog << "A file broadcasted ended\n  Packages failed: "
+			<< packages_failed << "\n  Packages sent: " << packages_success << "\n" <<
+			"  Size:" << "\n" <<
+			"    " << total_bytes << " B\n" <<
+			"    " << total_bytes / 1024.0 << " KiB\n" <<
+			"    " << total_bytes / 1024.0 / 1024.0 << " MiB\n" <<
+			"\n  Time: " << std::chrono::duration_cast<std::chrono::milliseconds>(b - a).count() / 1000.0 << " s." << std::endl;
 
 		// Устанавливаем флаг работы потока на false
 		this->running = false;

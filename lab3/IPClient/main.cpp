@@ -1,5 +1,6 @@
 #include <iostream>
 #include <WinSock2.h>
+#include <algorithm>
 #include "../shared.h"
 #include "client.h"
 
@@ -20,10 +21,12 @@ int main() {
 			std::cout << "Enter Y to request a file\n"
 				<< "Enter N to stop client\n"
 				<< "Enter L to save receive result into file\n"
+				<< "Enter F to print received message info\n"
 				<< "Enter E to exit loop\n"
 				<< "Enter S to print status" << std::endl;
 
 			std::cin >> input;
+			std::transform(input.begin(), input.end(), input.begin(), toupper);
 			if (input == "Y") {
 				// Запустить клиент
 				c->request();
@@ -44,6 +47,13 @@ int main() {
 				std::string save_path = getUniqueFilepath();
 				saveByteArray(c->getAnswer(), save_path);
 				std::cout << "A response was saved at '" << save_path << "'" << std::endl;
+			}
+			else if (input == "F") {
+				// Сохранить файл если он был успешно получен
+				if (!c->isReady())
+					std::cout << "Client response is not ready yet" << std::endl;
+
+				c->printAnswerInfo(std::cout);
 			}
 			else if (input == "S") {
 				// Вывести информацию о клиенте

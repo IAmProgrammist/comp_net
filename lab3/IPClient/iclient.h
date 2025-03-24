@@ -21,6 +21,8 @@ public:
 	virtual const std::vector<char>& getAnswer() = 0;
 	// Отобразить информацию о клиенте
 	virtual std::ostream& printClientInfo(std::ostream& out) = 0;
+	// Отобразить информацию о файле
+	virtual std::ostream& printAnswerInfo(std::ostream& out) = 0;
 
 	// Загружает библиотеку WinSock
 	static void init();

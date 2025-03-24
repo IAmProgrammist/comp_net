@@ -1,4 +1,5 @@
 #include <iostream>
+#include <algorithm>
 #include "server.h"
 
 int main() {
@@ -24,6 +25,7 @@ int main() {
 				<< "Enter S to print status" << std::endl;
 
 			std::cin >> input;
+			std::transform(input.begin(), input.end(), input.begin(), toupper);
 			if (input == "Y") {
 				// Запустить сервер
 				s->start();

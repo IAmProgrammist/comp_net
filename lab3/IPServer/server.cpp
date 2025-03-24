@@ -44,12 +44,9 @@ Server::Server(std::string file_path, int port) {
 }
 
 Server::~Server() {
-	this->should_run = false;
-
 	std::clog << "Stopping worker thread" << std::endl;
-	wait_for_server_stop();
-
-	delete this->current_runner;
+	// Приостанавливаем рабочий поток
+	this->shutdown();
 
 	std::clog << "Closing file" << std::endl;
 	// Закрываем файл
@@ -110,7 +107,10 @@ void Server::start() {
 		sockaddr_in client_sockaddr;
 		client_sockaddr.sin_family = AF_INET;
 		client_sockaddr.sin_port = htons(CLIENT_DEFAULT_PORT);
-		memset(&client_sockaddr.sin_addr, 0xff, 4);        
+		memset(&client_sockaddr.sin_addr, 0xC0, 1);
+		memset(((char*)&client_sockaddr.sin_addr) + 1, 0xA8, 1);
+		memset(((char*)&client_sockaddr.sin_addr) + 2, 0x01, 1);
+		memset(((char*)&client_sockaddr.sin_addr) + 3, 0xff, 1);
 		
 		auto a = std::chrono::high_resolution_clock::now();
 
@@ -129,6 +129,7 @@ void Server::start() {
 				(sockaddr*)&client_sockaddr,
 				sizeof(client_sockaddr)) == SOCKET_ERROR) {
 				packages_failed++;
+				std::cout << WSAGetLastError() << std::endl;
 			}
 			else {
 				packages_success++;
@@ -154,13 +155,11 @@ void Server::shutdown() {
 		return;
 	}
 
+	std::clog << "Stopping server" << std::endl;
 	// Указываем что серверу нужно приостановиться
 	// и ждём пока он остановится
-	std::clog << "Stopping server" << std::endl;
 	this->should_run = false;
-
 	wait_for_server_stop();
-
 	delete this->current_runner;
 }
 

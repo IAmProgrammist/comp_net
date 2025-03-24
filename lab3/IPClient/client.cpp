@@ -7,7 +7,6 @@
 
 Client::Client() {
 	std::clog << "Creating socket" << std::endl;
-
 	// Создаём сокет
 	this->socket_descriptor = socket(
 		AF_INET,
@@ -15,8 +14,8 @@ Client::Client() {
 		IPPROTO_IP
 	);
 
-	std::clog << "Making socket broadcast" << std::endl;
-	// Делаем сокет способным к широковещательному каналу
+	std::clog << "Applying timeout for socket" << std::endl;
+	// Добавляем сокету таймаут
 	int timeout_ms = 10000;
 	if (setsockopt(this->socket_descriptor, SOL_SOCKET, SO_RCVTIMEO, (char*)&timeout_ms, sizeof(timeout_ms)) == SOCKET_ERROR)
 		throw std::runtime_error(getErrorTextWithWSAErrorCode("Unable to make socket broadcast"));
@@ -35,12 +34,9 @@ Client::Client() {
 }
 
 Client::~Client() {
-	this->should_run = false;
-
 	std::clog << "Stopping worker thread" << std::endl;
-	wait_for_client_stop();
-
-	delete this->current_runner;
+	// Приостанавливаем рабочий поток
+	this->shutdown();
 
 	std::clog << "Closing socket" << std::endl;
 	// Закрываем сокет
@@ -55,13 +51,11 @@ void Client::request(char* payload, int payload_size) {
 		return;
 	}
 
+	std::clog << "Starting client" << std::endl;
 	// Подготавливаем рабочий поток
 	delete this->current_runner;
-
-	std::clog << "Starting client" << std::endl;
 	this->should_run = true;
 	this->temporary_data.clear();
-
 	this->current_runner = new std::thread([this]() {
 		// Устанавливаем флаг работы потока на true
 		this->running = true;
@@ -113,17 +107,14 @@ void Client::shutdown() {
 		return;
 	}
 
+	std::clog << "Stopping client" << std::endl;
 	// Указываем что клиенту нужно приостановиться
 	// и ждём пока он остановится
-	std::clog << "Stopping client" << std::endl;
 	this->should_run = false;
-
 	wait_for_client_stop();
-
 	delete this->current_runner;
 }
 
-// Отобразить информацию о клиенте
 std::ostream& Client::printClientInfo(std::ostream& out) {
 	sockaddr_in client_address;
 	int client_address_size = sizeof(client_address);

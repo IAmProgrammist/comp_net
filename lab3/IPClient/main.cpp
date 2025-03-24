@@ -49,7 +49,7 @@ int main() {
 				std::cout << "A response was saved at '" << save_path << "'" << std::endl;
 			}
 			else if (input == "F") {
-				// Сохранить файл если он был успешно получен
+				// Вывести информацию о файле если он был успешно получен
 				if (!c->isReady())
 					std::cout << "Client response is not ready yet" << std::endl;
 

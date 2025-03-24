@@ -107,9 +107,7 @@ void Server::start() {
 		sockaddr_in client_sockaddr;
 		client_sockaddr.sin_family = AF_INET;
 		client_sockaddr.sin_port = htons(CLIENT_DEFAULT_PORT);
-		memset(&client_sockaddr.sin_addr, 0xC0, 1);
-		memset(((char*)&client_sockaddr.sin_addr) + 1, 0xA8, 1);
-		memset(((char*)&client_sockaddr.sin_addr) + 2, 0x01, 1);
+		client_sockaddr.sin_addr = getDeviceAddrInfo().sin_addr;
 		memset(((char*)&client_sockaddr.sin_addr) + 3, 0xff, 1);
 
 		int total_bytes = 0;
@@ -132,7 +130,6 @@ void Server::start() {
 				(sockaddr*)&client_sockaddr,
 				sizeof(client_sockaddr)) == SOCKET_ERROR) {
 				packages_failed++;
-				std::cout << WSAGetLastError() << std::endl;
 			}
 			else {
 				packages_success++;

@@ -43,7 +43,13 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="ip\pch.h">
-      <Filter>Source Files\ip</Filter>
+      <Filter>Header Files\ip</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\webstur\ip\tcpserver.h">
+      <Filter>Header Files\ip</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\webstur\ip\simpletcpserver.h">
+      <Filter>Header Files\ip</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -66,6 +72,12 @@
       <Filter>Source Files\ip</Filter>
     </ClCompile>
     <ClCompile Include="ip\udpserver.cpp">
+      <Filter>Source Files\ip</Filter>
+    </ClCompile>
+    <ClCompile Include="ip\tcpserver.cpp">
+      <Filter>Source Files\ip</Filter>
+    </ClCompile>
+    <ClCompile Include="ip\simpletcpserver.cpp">
       <Filter>Source Files\ip</Filter>
     </ClCompile>
   </ItemGroup>

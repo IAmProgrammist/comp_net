@@ -1,11 +1,17 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 17
-VisualStudioVersion = 17.12.35527.113
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.35425.106
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "IPServer", "lab3\IPServer\IPServer.vcxproj", "{29AE57C9-3C3C-46EF-882E-117419FD735C}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "IPClient", "lab3\IPClient\IPClient.vcxproj", "{C5FDCE3C-70ED-4E49-B0FB-E14F03F61D5B}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "UDPClient", "lab4\UDPClient\UDPClient.vcxproj", "{6C149122-A60D-4600-95AC-F855BA734B2C}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "UDPServer", "lab4\UDPServer\UDPServer.vcxproj", "{5FBFF204-12C6-4A3C-9D37-CB089F6CF105}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "webstur", "src\webstur\webstur.vcxproj", "{133261F7-BAC1-47E4-B8DA-D4EBB67350C6}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -31,8 +37,35 @@ Global
 		{C5FDCE3C-70ED-4E49-B0FB-E14F03F61D5B}.Release|x64.Build.0 = Release|x64
 		{C5FDCE3C-70ED-4E49-B0FB-E14F03F61D5B}.Release|x86.ActiveCfg = Release|Win32
 		{C5FDCE3C-70ED-4E49-B0FB-E14F03F61D5B}.Release|x86.Build.0 = Release|Win32
+		{6C149122-A60D-4600-95AC-F855BA734B2C}.Debug|x64.ActiveCfg = Debug|x64
+		{6C149122-A60D-4600-95AC-F855BA734B2C}.Debug|x64.Build.0 = Debug|x64
+		{6C149122-A60D-4600-95AC-F855BA734B2C}.Debug|x86.ActiveCfg = Debug|Win32
+		{6C149122-A60D-4600-95AC-F855BA734B2C}.Debug|x86.Build.0 = Debug|Win32
+		{6C149122-A60D-4600-95AC-F855BA734B2C}.Release|x64.ActiveCfg = Release|x64
+		{6C149122-A60D-4600-95AC-F855BA734B2C}.Release|x64.Build.0 = Release|x64
+		{6C149122-A60D-4600-95AC-F855BA734B2C}.Release|x86.ActiveCfg = Release|Win32
+		{6C149122-A60D-4600-95AC-F855BA734B2C}.Release|x86.Build.0 = Release|Win32
+		{5FBFF204-12C6-4A3C-9D37-CB089F6CF105}.Debug|x64.ActiveCfg = Debug|x64
+		{5FBFF204-12C6-4A3C-9D37-CB089F6CF105}.Debug|x64.Build.0 = Debug|x64
+		{5FBFF204-12C6-4A3C-9D37-CB089F6CF105}.Debug|x86.ActiveCfg = Debug|Win32
+		{5FBFF204-12C6-4A3C-9D37-CB089F6CF105}.Debug|x86.Build.0 = Debug|Win32
+		{5FBFF204-12C6-4A3C-9D37-CB089F6CF105}.Release|x64.ActiveCfg = Release|x64
+		{5FBFF204-12C6-4A3C-9D37-CB089F6CF105}.Release|x64.Build.0 = Release|x64
+		{5FBFF204-12C6-4A3C-9D37-CB089F6CF105}.Release|x86.ActiveCfg = Release|Win32
+		{5FBFF204-12C6-4A3C-9D37-CB089F6CF105}.Release|x86.Build.0 = Release|Win32
+		{133261F7-BAC1-47E4-B8DA-D4EBB67350C6}.Debug|x64.ActiveCfg = Debug|x64
+		{133261F7-BAC1-47E4-B8DA-D4EBB67350C6}.Debug|x64.Build.0 = Debug|x64
+		{133261F7-BAC1-47E4-B8DA-D4EBB67350C6}.Debug|x86.ActiveCfg = Debug|Win32
+		{133261F7-BAC1-47E4-B8DA-D4EBB67350C6}.Debug|x86.Build.0 = Debug|Win32
+		{133261F7-BAC1-47E4-B8DA-D4EBB67350C6}.Release|x64.ActiveCfg = Release|x64
+		{133261F7-BAC1-47E4-B8DA-D4EBB67350C6}.Release|x64.Build.0 = Release|x64
+		{133261F7-BAC1-47E4-B8DA-D4EBB67350C6}.Release|x86.ActiveCfg = Release|Win32
+		{133261F7-BAC1-47E4-B8DA-D4EBB67350C6}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {69A4F697-5E93-4BEE-BACC-66606D14AACD}
 	EndGlobalSection
 EndGlobal

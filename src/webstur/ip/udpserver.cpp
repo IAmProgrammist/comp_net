@@ -1,4 +1,4 @@
-#include "../pch.h"
+#include "pch.h"
 #include <exception>
 #include <WinSock2.h>
 #include <sstream>
@@ -6,8 +6,6 @@
 #include <chrono>
 #include <webstur/ip/udpserver.h>
 #include <webstur/utils.h>
-
-#pragma comment(lib, "ws2_32.lib")
 
 UDPServer::UDPServer(std::string file_path, int port) {
 	this->should_run = new std::atomic<bool>(false);

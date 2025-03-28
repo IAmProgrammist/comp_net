@@ -170,6 +170,7 @@
     <ClInclude Include="..\..\include\webstur\iserver.h" />
     <ClInclude Include="..\..\include\webstur\utils.h" />
     <ClInclude Include="framework.h" />
+    <ClInclude Include="ip\pch.h" />
     <ClInclude Include="pch.h" />
   </ItemGroup>
   <ItemGroup>

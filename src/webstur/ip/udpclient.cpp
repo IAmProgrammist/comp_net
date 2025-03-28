@@ -1,4 +1,4 @@
-#include "../pch.h"
+#include "pch.h"
 #include <iostream>
 #include <WinSock2.h>
 #include <cstdio>

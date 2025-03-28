@@ -1,10 +1,10 @@
+#include "pch.h"
 #include <sstream>
 #include <WinSock2.h>
 #include <WS2tcpip.h>
-#include <filesystem>
 #include <random>
 #include <fstream>
-#include "shared.h"
+#include <webstur/utils.h>
 
 namespace uuid {
 	static std::random_device              rd;
@@ -123,7 +123,7 @@ void saveByteArray(const std::vector<char>& data, std::string path) {
 		throw std::runtime_error("Unable to open file '" + path + "' for reading");
 
 	// Пишем массив в файл
-	for (int i = 0; i < data.size() / IMAGE_FRAGMENT_FILE_SIZE; i++)
+	for (unsigned i = 0; i < data.size() / IMAGE_FRAGMENT_FILE_SIZE; i++)
 		save_file.write(&data[i * IMAGE_FRAGMENT_FILE_SIZE], sizeof(char) * IMAGE_FRAGMENT_FILE_SIZE);
 
 	// Сохраняем и закрываем файл

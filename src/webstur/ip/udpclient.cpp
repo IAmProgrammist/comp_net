@@ -1,11 +1,16 @@
+#include "pch.h"
 #include <iostream>
 #include <WinSock2.h>
 #include <cstdio>
 #include <fstream>
-#include "client.h"
-#include "../shared.h"
+#include <webstur/ip/udpclient.h>
+#include <webstur/utils.h>
 
-Client::Client() {
+UDPClient::UDPClient() {
+	this->should_run = new std::atomic<bool>(false);
+	this->running = new std::atomic<bool>(false);
+	this->temporary_data = new std::vector<char>();
+
 	std::clog << "Creating socket" << std::endl;
 	// Создаём сокет
 	this->socket_descriptor = socket(
@@ -14,7 +19,7 @@ Client::Client() {
 		IPPROTO_IP
 	);
 
-	std::clog << "Applying timeout for socket" << std::endl;
+	std::clog << "Applying timeout for socket" << std::endl; 
 	// Добавляем сокету таймаут
 	int timeout_ms = 10000;
 	if (setsockopt(this->socket_descriptor, SOL_SOCKET, SO_RCVTIMEO, (char*)&timeout_ms, sizeof(timeout_ms)) == SOCKET_ERROR)
@@ -25,7 +30,7 @@ Client::Client() {
 	sockaddr_in bind_addr;
 	bind_addr.sin_family = AF_INET;
 	bind_addr.sin_addr = getDeviceAddrInfo().sin_addr;
-	bind_addr.sin_port = htons(CLIENT_DEFAULT_PORT);
+	bind_addr.sin_port = htons(UDP_CLIENT_DEFAULT_PORT);
 
 	std::clog << "Binding socket" << std::endl;
 	// Привязать сокет к адресу
@@ -33,7 +38,7 @@ Client::Client() {
 		throw std::runtime_error(getErrorTextWithWSAErrorCode("Unable to bind socket descriptor"));
 }
 
-Client::~Client() {
+UDPClient::~UDPClient() {
 	std::clog << "Stopping worker thread" << std::endl;
 	// Приостанавливаем рабочий поток
 	this->shutdown();
@@ -42,25 +47,29 @@ Client::~Client() {
 	// Закрываем сокет
 	if (closesocket(this->socket_descriptor) == SOCKET_ERROR)
 		throw std::runtime_error(getErrorTextWithWSAErrorCode("Unable to close socket"));
+
+	delete this->should_run;
+	delete this->running;
+	delete this->temporary_data;
 }
 
-void Client::request(char* payload, int payload_size) {
+void UDPClient::request(char* payload, int payload_size) {
 	// Если клиент уже работает, выходим из него
-	if (this->running) {
-		std::clog << "Client is already running" << std::endl;
+	if (*this->running) {
+		std::clog << "UDPClient is already running" << std::endl;
 		return;
 	}
 
 	std::clog << "Starting client" << std::endl;
 	// Подготавливаем рабочий поток
 	delete this->current_runner;
-	this->should_run = true;
-	this->temporary_data.clear();
+	*this->should_run = true;
+	this->temporary_data->clear();
 	this->current_runner = new std::thread([this]() {
 		// Устанавливаем флаг работы потока на true
-		this->running = true;
+		*this->running = true;
 
-		char buffer[IMAGE_FRAGMENT_SIZE];
+		char buffer[UDP_IMAGE_FRAGMENT_SIZE];
 		int bytes_received;
 
 		auto a = std::chrono::high_resolution_clock::now();
@@ -73,7 +82,7 @@ void Client::request(char* payload, int payload_size) {
 			0,
 			nullptr,
 			nullptr)) != SOCKET_ERROR) {
-			this->temporary_data.insert(this->temporary_data.end(), buffer, buffer + sizeof(buffer));
+			this->temporary_data->insert(this->temporary_data->end(), buffer, buffer + sizeof(buffer));
 		}
 
 		auto b = std::chrono::high_resolution_clock::now();
@@ -82,46 +91,46 @@ void Client::request(char* payload, int payload_size) {
 			"Time: " << std::chrono::duration_cast<std::chrono::milliseconds>(b - a).count() / 1000.0 << " s." << std::endl;
 
 		// Устанавливаем флаг работы потока на false
-		this->running = false;
+		*this->running = false;
 	});
 
 	this->current_runner->detach();
 }
 
-bool Client::isReady() {
-	return !this->running;
+bool UDPClient::isReady() {
+	return !(*this->running);
 }
 
-const std::vector<char>& Client::getAnswer() {
-	return this->temporary_data;
+const std::vector<char>& UDPClient::getAnswer() {
+	return *this->temporary_data;
 }
 
-void Client::wait_for_client_stop() {
-	while (this->running) {
+void UDPClient::wait_for_client_stop() {
+	while (*this->running) {
 	}
 }
 
-void Client::shutdown() {
-	if (!this->running) {
-		std::clog << "Client is already stopped" << std::endl;
+void UDPClient::shutdown() {
+	if (!(*this->running)) {
+		std::clog << "UDPClient is already stopped" << std::endl;
 		return;
 	}
 
 	std::clog << "Stopping client" << std::endl;
 	// Указываем что клиенту нужно приостановиться
 	// и ждём пока он остановится
-	this->should_run = false;
+	*this->should_run = false;
 	wait_for_client_stop();
 	delete this->current_runner;
 }
 
-std::ostream& Client::printClientInfo(std::ostream& out) {
+std::ostream& UDPClient::printClientInfo(std::ostream& out) {
 	sockaddr_in client_address;
 	int client_address_size = sizeof(client_address);
 	int get_sock_name_res = getsockname(this->socket_descriptor, (sockaddr*)&client_address, &client_address_size);
 
 	out << "IP client info:\n" <<
-		"Client state: " << (this->running ? "running" : "not running") << "\n";
+		"UDPClient state: " << (*this->running ? "running" : "not running") << "\n";
 
 	if (get_sock_name_res == SOCKET_ERROR) {
 		out << "Unable to get socket info\n";
@@ -137,11 +146,11 @@ std::ostream& Client::printClientInfo(std::ostream& out) {
 	return out;
 }
 
-std::ostream& Client::printAnswerInfo(std::ostream& out) {
+std::ostream& UDPClient::printAnswerInfo(std::ostream& out) {
 	out << "Answer info:\n" << "  Size:\n";
-	out << "    " << this->temporary_data.size() << " B\n";
-	out << "    " << this->temporary_data.size() / 1024.0 << " KiB\n";
-	out << "    " << this->temporary_data.size() / 1024.0 / 1024.0 << " MiB\n";
+	out << "    " << this->temporary_data->size() << " B\n";
+	out << "    " << this->temporary_data->size() / 1024.0 << " KiB\n";
+	out << "    " << this->temporary_data->size() / 1024.0 / 1024.0 << " MiB\n";
 
 	out.flush();
 

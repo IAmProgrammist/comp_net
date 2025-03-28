@@ -1,9 +1,10 @@
 #pragma once
 
 #include <string>
+#include <webstur/utils.h>
 
 // Абстрактный класс для работы с WinSock библиотекой
-class IServer {
+class DLLEXPORT IServer {
 public:
 	// Создаёт сервер
 	IServer();

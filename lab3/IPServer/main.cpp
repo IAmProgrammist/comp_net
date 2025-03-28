@@ -1,6 +1,6 @@
 #include <iostream>
 #include <algorithm>
-#include "server.h"
+#include <webstur/ip/udpserver.h>
 
 int main() {
 	try {
@@ -14,7 +14,7 @@ int main() {
 		std::cin >> input;
 
 		// Создать сервер
-		IServer* s = new Server(input);
+		IServer* s = new UDPServer(input);
 
 		// Оставляем сервер работать, пока пользователь не решит его приостановить
 		while (true)

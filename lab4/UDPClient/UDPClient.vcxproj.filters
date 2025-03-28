@@ -15,7 +15,7 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="main.cpp">
+    <ClCompile Include="..\..\lab3\IPClient\main.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

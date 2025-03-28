@@ -2,8 +2,9 @@
 
 #include <string>
 #include <vector>
+#include <webstur/utils.h>
 
-class IClient {
+class DLLEXPORT IClient {
 public:
 	// Создаёт клиента
 	IClient();

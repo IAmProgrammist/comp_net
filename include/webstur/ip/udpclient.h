@@ -1,22 +1,25 @@
+// Класс для инициализации широковещательного UDP-сервера
+
 #pragma once
 
 #include <vector>
 #include <thread>
-#include "iclient.h"
+#include <webstur/iclient.h>
+#include <webstur/utils.h>
 
-class Client : public IClient {
+class DLLEXPORT UDPClient : public IClient {
 	void wait_for_client_stop();
 protected:
-	std::atomic<bool> running = false;
-	std::atomic<bool> should_run = false;
+	std::atomic<bool>* running = nullptr;
+	std::atomic<bool>* should_run = nullptr;
 	SOCKET socket_descriptor;
-	std::vector<char> temporary_data;
+	std::vector<char>* temporary_data = nullptr;
 	std::thread* current_runner = nullptr;
 public:
 	// Создаёт клиент
-	Client();
+	UDPClient();
 	// Освобождает ресурсы клиента
-	virtual ~Client();
+	virtual ~UDPClient();
 	// Приостановить принятие информации от сервера
 	void shutdown();
 	// Запускает поток, принимающий пакеты от сервера.

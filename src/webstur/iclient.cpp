@@ -1,10 +1,9 @@
-#pragma once
-
+#include "pch.h"
 #include <sstream>
 #include <WinSock2.h>
 #include <iostream>
-#include "iclient.h"
-#include "../shared.h"
+#include <webstur/iclient.h>
+#include <webstur/utils.h>
 
 void IClient::init() {
     std::clog << "Loading WSA library" << std::endl;

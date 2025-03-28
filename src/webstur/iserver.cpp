@@ -1,10 +1,9 @@
-#pragma once
-
+#include "pch.h"
 #include <sstream>
 #include <WinSock2.h>
 #include <iostream>
-#include "iserver.h"
-#include "../shared.h"
+#include <webstur/iserver.h>
+#include <webstur/utils.h>
 
 void IServer::init() {
     std::clog << "Loading WSA library" << std::endl;

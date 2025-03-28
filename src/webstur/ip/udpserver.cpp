@@ -1,4 +1,4 @@
-#include "pch.h"
+#include "../pch.h"
 #include <exception>
 #include <WinSock2.h>
 #include <sstream>
@@ -9,7 +9,10 @@
 
 #pragma comment(lib, "ws2_32.lib")
 
-Server::Server(std::string file_path, int port) {
+UDPServer::UDPServer(std::string file_path, int port) {
+	this->should_run = new std::atomic<bool>(false);
+	this->running = new std::atomic<bool>(false);
+
 	std::clog << "Opening file " << file_path << std::endl;
 	// Открываем файл
 	this->file = new std::ifstream(file_path, std::ios::binary);
@@ -44,7 +47,7 @@ Server::Server(std::string file_path, int port) {
 		throw std::runtime_error(getErrorTextWithWSAErrorCode("Unable to bind socket descriptor"));
 }
 
-Server::~Server() {
+UDPServer::~UDPServer() {
 	std::clog << "Stopping worker thread" << std::endl;
 	// Приостанавливаем рабочий поток
 	this->shutdown();
@@ -58,15 +61,18 @@ Server::~Server() {
 	// Закрываем сокет
 	if (closesocket(this->socket_descriptor) == SOCKET_ERROR)
 		throw std::runtime_error(getErrorTextWithWSAErrorCode("Unable to close socket"));
+
+	delete this->should_run;
+	delete this->running;
 }
 
-std::ostream& Server::printServerInfo(std::ostream& out) {
+std::ostream& UDPServer::printServerInfo(std::ostream& out) {
 	sockaddr_in server_address;
 	int server_address_size = sizeof(server_address);
 	int get_sock_name_res = getsockname(this->socket_descriptor, (sockaddr*)&server_address, &server_address_size);
 
 	std::cout << "IP server info:\n" <<
-		"Server state: " << (this->running ? "running" : "not running") << "\n";
+		"UDPServer state: " << (*this->running ? "running" : "not running") << "\n";
 
 	if (get_sock_name_res == SOCKET_ERROR) {
 		std::cout << "Unable to get socket info\n";
@@ -82,10 +88,10 @@ std::ostream& Server::printServerInfo(std::ostream& out) {
 	return out;
 }
 
-void Server::start() {
+void UDPServer::start() {
 	// Если сервер уже работает, выходим из него
-	if (this->running) {
-		std::clog << "Server is already running" << std::endl;
+	if (*this->running) {
+		std::clog << "UDPServer is already running" << std::endl;
 		return;
 	}
 
@@ -93,11 +99,11 @@ void Server::start() {
 	delete this->current_runner;
 
 	std::clog << "Starting server" << std::endl;
-	this->should_run = true;
+	*this->should_run = true;
 
 	this->current_runner = new std::thread([this]() {
 		// Устанавливаем флаг работы потока на true
-		this->running = true;
+		*this->running = true;
 
 		this->file->clear();
 		this->file->seekg(0, std::ios::beg);
@@ -116,10 +122,10 @@ void Server::start() {
 		auto a = std::chrono::high_resolution_clock::now();
 
 		// Пока поток должен работать и не достигнут конец файла
-		while (this->should_run && !this->file->eof()) {
+		while (*this->should_run && !this->file->eof()) {
 			// Считать файл
 			this->file->read(buffer, sizeof(buffer));
-			int bytes_read = this->file->gcount();
+			int bytes_read = static_cast<int>(this->file->gcount());
 			total_bytes += bytes_read;
 
 			// Отправить фрагмент
@@ -148,29 +154,29 @@ void Server::start() {
 			"\n  Time: " << std::chrono::duration_cast<std::chrono::milliseconds>(b - a).count() / 1000.0 << " s." << std::endl;
 
 		// Устанавливаем флаг работы потока на false
-		this->running = false;
+		*this->running = false;
 	});
 
 	this->current_runner->detach();
 }
 
-void Server::shutdown() {
-	if (!this->running) {
-		std::clog << "Server is already stopped" << std::endl;
+void UDPServer::shutdown() {
+	if (!(*this->running)) {
+		std::clog << "UDPServer is already stopped" << std::endl;
 		return;
 	}
 
 	std::clog << "Stopping server" << std::endl;
 	// Указываем что серверу нужно приостановиться
 	// и ждём пока он остановится
-	this->should_run = false;
+	*this->should_run = false;
 	wait_for_server_stop();
 	delete this->current_runner;
 }
 
-void Server::wait_for_server_stop() {
+void UDPServer::wait_for_server_stop() {
 	// Используем спинлок, так как пакеты относительно небольшие и сервер должен 
 	// быстро увидеть что пора заканчивать работу
-	while (this->running) {
+	while (*this->running) {
 	}
 }

@@ -1,10 +1,8 @@
 #include <iostream>
 #include <WinSock2.h>
 #include <algorithm>
-#include "../shared.h"
-#include "client.h"
-
-#pragma comment(lib, "ws2_32.lib")
+#include <webstur/utils.h>
+#include <webstur/ip/udpclient.h>
 
 int main() {
 	try {
@@ -12,7 +10,7 @@ int main() {
 		IClient::init();
 
 		// Создать клиент
-		IClient* c = new Client();
+		IClient* c = new UDPClient();
 
 		// Оставляем клиент работать, пока пользователь не решит его приостановить
 		std::string input;

@@ -6,7 +6,7 @@
 #define DLLEXPORT __declspec(dllimport)
 #endif
 
-#define FUNC_DLLEXPORT extern "C" DLLEXPORT
+#define FUNC_DLLEXPORT DLLEXPORT
 
 #include <string>
 #include <WinSock2.h>

@@ -4,7 +4,8 @@ Source code for lab classes for computer networks course in BSTU after V.G. Shuk
 
 Built with MSVC 2022 (v143)
 
-Executables are placed in ./labN folders
+Examples are placed in ./labN folders, lab1 and lab2 are using
+old protocol IPX/SPX and not using webstur
 
 webstur - is a net library targetted for Windows platforms 
 which includes classes to create:

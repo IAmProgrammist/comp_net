@@ -22,6 +22,8 @@ public:
 	virtual ~UDPClient();
 	// Приостановить принятие информации от сервера
 	void shutdown();
+	// Запрашивает данные с сервера
+	void request();
 	// Запускает поток, принимающий пакеты от сервера.
 	// payload и payload_size игнорируется в данной реализации
 	void request(char* payload, int payload_size);

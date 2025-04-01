@@ -10,7 +10,7 @@ int main() {
 		IClient::init();
 
 		// Создать клиент
-		IClient* c = new UDPClient();
+		UDPClient* c = new UDPClient();
 
 		// Оставляем клиент работать, пока пользователь не решит его приостановить
 		std::string input;

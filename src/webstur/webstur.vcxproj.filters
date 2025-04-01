@@ -119,7 +119,7 @@
     <ClCompile Include="ip\tcp\file\filetcpclient.cpp">
       <Filter>Source Files\ip\tcp\file</Filter>
     </ClCompile>
-    <ClCompile Include="tcpclient.cpp">
+    <ClCompile Include="ip\tcp\tcpclient.cpp">
       <Filter>Source Files\ip\tcp</Filter>
     </ClCompile>
   </ItemGroup>

@@ -156,3 +156,7 @@ std::ostream& UDPClient::printAnswerInfo(std::ostream& out) {
 
 	return out;
 }
+
+void UDPClient::request() {
+	return IClient::request();
+}

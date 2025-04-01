@@ -8,18 +8,10 @@ void FileTCPServer::onMessage(SOCKET client, const std::vector<char>& message) {
 	
 	std::clog << "A file at '" << file_path << "' is requested" << std::endl;
 
-	// Открыть файл
+	// РћС‚РєСЂС‹С‚СЊ С„Р°Р№Р»
 	std::ifstream read_file(file_path);
-	if (!read_file.good()) {
-		// Файл не удалось открыть, разрываем соединение
-		std::cerr << "Invalid path specified: '" << file_path << "'" << std::endl;
-		this->disconnect(client);
-	}
-
-	// Пока не достигнут конец файла
-	while (!read_file.eof()) {
-
-	}
+	this->sendMessage(client, read_file);	
+	this->disconnect(client);
 }
 
 void FileTCPServer::onConnect(SOCKET client) {

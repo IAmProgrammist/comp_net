@@ -1,5 +1,7 @@
 #include "pch.h"
 #include <iostream>
+#include <sstream>
+#include <string>
 #include <webstur/ip/tcp/tcpserver.h>
 
 TCPServer::TCPServer(int port) {
@@ -224,10 +226,18 @@ void TCPServer::serveClient(SOCKET client) {
 	(*this->current_threads_amount)--;
 }
 
-void TCPServer::sendMessage(SOCKET client, const std::vector<char>& message) {
+void TCPServer::sendMessage(SOCKET client, std::istream& message) {
+	char buffer[TCP_MAX_MESSAGE_SIZE];
+	
 	// Отправить данные клиенту
-	if (send(client, &message[0], message.size(), 0) == SOCKET_ERROR)
-		throw std::runtime_error(getErrorTextWithWSAErrorCode("Couldn't send data over TCP"));
+	while (!message.eof()) {
+		auto bytes_read = message.readsome(buffer, sizeof(buffer));
+
+		if (bytes_read == 0) break;
+
+		if (send(client, buffer, bytes_read, 0) == SOCKET_ERROR)
+			throw std::runtime_error(getErrorTextWithWSAErrorCode("Couldn't send data over TCP"));
+	}
 }
 
 void TCPServer::disconnect(SOCKET client) {

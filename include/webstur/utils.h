@@ -19,7 +19,7 @@
 #define TCP_SERVER_DEFAULT_PORT       3178
 #define TCP_MAX_WORKER_THREADS_AMOUNT 256
 #define TCP_SERVER_TIMEOUT_S          10
-#define TCP_MAX_MESSAGE_SIZE          16384
+#define TCP_MAX_MESSAGE_SIZE          16000
 
 // Формирует текст ошибки вместе с WSA кодом
 FUNC_DLLEXPORT std::string getErrorTextWithWSAErrorCode(std::string errorText);

@@ -1,9 +1,9 @@
 #include <iostream>
-#include <webstur/ip/tcp/simple/simpletcpserver.h>
+#include <webstur/ip/tcp/file/filetcpserver.h>
 
 int main() {
 	IServer::init();
-	TCPServer* server = new SimpleTCPServer();
+	TCPServer* server = new FileTCPServer();
 	server->start();
 	server->printServerInfo(std::cout);
 	while (true) {

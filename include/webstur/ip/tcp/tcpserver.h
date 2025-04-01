@@ -5,6 +5,7 @@
 #include <atomic>
 #include <thread>
 #include <semaphore>
+#include <sstream>
 #include <webstur/utils.h>
 #include <webstur/iserver.h>
 
@@ -25,7 +26,7 @@ protected:
 	// Метод, вызываемый при разрыве общения с клиентом
 	virtual void onMessage(SOCKET client, const std::vector<char>& message) = 0;
 	// Отправляет данные message TCP-клиенту client
-	void sendMessage(SOCKET client, const std::vector<char>& message);
+	void sendMessage(SOCKET client, std::istream& message);
 	// Закрывает соединение
 	void disconnect(SOCKET client);
 public:

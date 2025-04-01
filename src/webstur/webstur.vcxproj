@@ -30,26 +30,26 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
-    <PlatformToolset>v143</PlatformToolset>
+    <PlatformToolset>v142</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
-    <PlatformToolset>v143</PlatformToolset>
+    <PlatformToolset>v142</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
-    <PlatformToolset>v143</PlatformToolset>
+    <PlatformToolset>v142</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
-    <PlatformToolset>v143</PlatformToolset>
+    <PlatformToolset>v142</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
@@ -165,10 +165,13 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="..\..\include\webstur\iclient.h" />
-    <ClInclude Include="..\..\include\webstur\ip\simpletcpserver.h" />
-    <ClInclude Include="..\..\include\webstur\ip\tcpserver.h" />
-    <ClInclude Include="..\..\include\webstur\ip\udpclient.h" />
-    <ClInclude Include="..\..\include\webstur\ip\udpserver.h" />
+    <ClInclude Include="..\..\include\webstur\ip\tcp\file\filetcpclient.h" />
+    <ClInclude Include="..\..\include\webstur\ip\tcp\file\filetcpserver.h" />
+    <ClInclude Include="..\..\include\webstur\ip\tcp\simple\simpletcpserver.h" />
+    <ClInclude Include="..\..\include\webstur\ip\tcp\tcpclient.h" />
+    <ClInclude Include="..\..\include\webstur\ip\tcp\tcpserver.h" />
+    <ClInclude Include="..\..\include\webstur\ip\udp\udpclient.h" />
+    <ClInclude Include="..\..\include\webstur\ip\udp\udpserver.h" />
     <ClInclude Include="..\..\include\webstur\iserver.h" />
     <ClInclude Include="..\..\include\webstur\utils.h" />
     <ClInclude Include="framework.h" />
@@ -178,10 +181,12 @@
   <ItemGroup>
     <ClCompile Include="dllmain.cpp" />
     <ClCompile Include="iclient.cpp" />
-    <ClCompile Include="ip\simpletcpserver.cpp" />
-    <ClCompile Include="ip\tcpserver.cpp" />
-    <ClCompile Include="ip\udpclient.cpp" />
-    <ClCompile Include="ip\udpserver.cpp" />
+    <ClCompile Include="ip\tcp\file\filetcpclient.cpp" />
+    <ClCompile Include="ip\tcp\file\filetcpserver.cpp" />
+    <ClCompile Include="ip\tcp\simple\simpletcpserver.cpp" />
+    <ClCompile Include="ip\tcp\tcpserver.cpp" />
+    <ClCompile Include="ip\udp\udpclient.cpp" />
+    <ClCompile Include="ip\udp\udpserver.cpp" />
     <ClCompile Include="iserver.cpp" />
     <ClCompile Include="pch.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>

@@ -1,6 +1,6 @@
 #include "pch.h"
 #include <iostream>
-#include <webstur/ip/tcpserver.h>
+#include <webstur/ip/tcp/tcpserver.h>
 
 TCPServer::TCPServer(int port) {
 	this->should_run = new std::atomic<bool>(false);
@@ -158,11 +158,15 @@ void TCPServer::serveClient(SOCKET client) {
 	(*this->current_threads_amount)++;
 
 	try {
+		// ќповещаем при помощи метода onConnect что получено новое соединение
+		this->onConnect(client);
+
 		std::vector<char> buffer(0, TCP_MAX_MESSAGE_SIZE);
 		FD_SET readfds;
 		timeval timeout;
 		timeout.tv_sec = TCP_SERVER_TIMEOUT_S;
 		timeout.tv_usec = 0;
+		bool outer_close = false;
 		while (*this->should_run) {
 			FD_ZERO(&readfds);
 			FD_SET(client, &readfds);
@@ -171,10 +175,16 @@ void TCPServer::serveClient(SOCKET client) {
 			// ѕолучить количество соединений дл€ текущего сокета с таймаутом
 			int to_read = select(0, &readfds, nullptr, nullptr, &timeout);
 			if (to_read == SOCKET_ERROR) {
+				// ≈сли сокет закрыт извне, можно выйти из цикла
+				if (WSAGetLastError() == 10038) {
+					outer_close = true;
+					break;
+				}
+
 				std::cerr << getErrorTextWithWSAErrorCode("Couldn't select for socket") << std::endl;
 			}
 			else if (to_read > 0) {
-				std::clog << "Waiting for client connections" << std::endl;
+				std::clog << "A client input received" << std::endl;
 				int bytes_read;
 				buffer.resize(TCP_MAX_MESSAGE_SIZE);
 				// ≈сли соединени€ есть, получаем его и запускаем поток дл€ обработки
@@ -189,7 +199,7 @@ void TCPServer::serveClient(SOCKET client) {
 					break;
 				}
 				else if (bytes_read != 0) {
-					// ѕолучено сообщение, перенаправить его пользователю
+					// ѕолучено сообщение, оповестить при помощи метода onMessage
 					buffer.resize(bytes_read);
 					this->onMessage(client, buffer);
 				}
@@ -199,14 +209,28 @@ void TCPServer::serveClient(SOCKET client) {
 
 		std::clog << "Closing client socket" << std::endl;
 		// «акрываем сокет
-		if (closesocket(client) == SOCKET_ERROR)
+		if (!outer_close && closesocket(client) == SOCKET_ERROR)
 			std::cerr << getErrorTextWithWSAErrorCode("Unable to close client socket");
 	}
 	catch (...) {
 		std::cerr << "An error occured while handling user connection";
 	}
 
+	// ќповещаем при помощи метода onDisconnect о разрыве соединени€
+	this->onDisconnect(client);
+
 	std::clog << "Exiting serve client thread" << std::endl;
 	// ”меньшаем количество текущих потоков
 	(*this->current_threads_amount)--;
+}
+
+void TCPServer::sendMessage(SOCKET client, const std::vector<char>& message) {
+	// ќтправить данные клиенту
+	if (send(client, &message[0], message.size(), 0) == SOCKET_ERROR)
+		throw std::runtime_error(getErrorTextWithWSAErrorCode("Couldn't send data over TCP"));
+}
+
+void TCPServer::disconnect(SOCKET client) {
+	if (closesocket(client) == SOCKET_ERROR)
+		throw std::runtime_error(getErrorTextWithWSAErrorCode("Couldn't close connection for socket"));
 }

@@ -16,8 +16,18 @@ protected:
 	std::thread* current_runner = nullptr;
 	std::atomic<int>* current_threads_amount = nullptr;
 
-	// Функция-коллбек, вызываемая при получении сообщения от клиента
+	// Метод, вызываемый при установлении соединения с клиентом
+	virtual void onConnect(SOCKET client) = 0;
+	// Метод, вызываемый при разрыве соединения с клиентом
+	// Переданный сокет уже не является действительным, 
+	// однако передаётся для отладочной информации
+	virtual void onDisconnect(SOCKET client) = 0;
+	// Метод, вызываемый при разрыве общения с клиентом
 	virtual void onMessage(SOCKET client, const std::vector<char>& message) = 0;
+	// Отправляет данные message TCP-клиенту client
+	void sendMessage(SOCKET client, const std::vector<char>& message);
+	// Закрывает соединение
+	void disconnect(SOCKET client);
 public:
 	// Создаёт сервер
 	TCPServer(int port = TCP_SERVER_DEFAULT_PORT);

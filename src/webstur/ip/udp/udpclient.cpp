@@ -3,7 +3,7 @@
 #include <WinSock2.h>
 #include <cstdio>
 #include <fstream>
-#include <webstur/ip/udpclient.h>
+#include <webstur/ip/udp/udpclient.h>
 #include <webstur/utils.h>
 
 UDPClient::UDPClient() {

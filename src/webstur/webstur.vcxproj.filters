@@ -19,6 +19,30 @@
     <Filter Include="Source Files\ip">
       <UniqueIdentifier>{7f55f881-34ea-4322-820c-7635ab2a6d22}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\ip\tcp">
+      <UniqueIdentifier>{09614ced-f9f2-4054-953a-eb3f5f9172b7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\ip\udp">
+      <UniqueIdentifier>{93dc6254-4f8f-42ca-aed1-2332ad0cbbc8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\ip\tcp\simple">
+      <UniqueIdentifier>{af6aa28a-674a-4c6b-a0dd-b403e1c098b5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\ip\tcp">
+      <UniqueIdentifier>{cc94243e-8e06-40b6-99b0-b14d152d20a7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\ip\udp">
+      <UniqueIdentifier>{e4b66ecd-09e5-41f3-9c9c-9a09bcb8f4e2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\ip\tcp\simple">
+      <UniqueIdentifier>{51bfec20-a6d6-4a50-9a79-68537bd67021}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\ip\tcp\file">
+      <UniqueIdentifier>{fb7fed36-f8cc-487c-adf7-a640b68a0e6a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\ip\tcp\file">
+      <UniqueIdentifier>{52a0e225-8473-46a0-8cb3-f10a195e05b2}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\include\webstur\iclient.h">
@@ -30,12 +54,6 @@
     <ClInclude Include="..\..\include\webstur\utils.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\include\webstur\ip\udpclient.h">
-      <Filter>Header Files\ip</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\include\webstur\ip\udpserver.h">
-      <Filter>Header Files\ip</Filter>
-    </ClInclude>
     <ClInclude Include="framework.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -45,11 +63,26 @@
     <ClInclude Include="ip\pch.h">
       <Filter>Header Files\ip</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\include\webstur\ip\tcpserver.h">
-      <Filter>Header Files\ip</Filter>
+    <ClInclude Include="..\..\include\webstur\ip\udp\udpclient.h">
+      <Filter>Header Files\ip\udp</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\include\webstur\ip\simpletcpserver.h">
-      <Filter>Header Files\ip</Filter>
+    <ClInclude Include="..\..\include\webstur\ip\udp\udpserver.h">
+      <Filter>Header Files\ip\udp</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\webstur\ip\tcp\tcpclient.h">
+      <Filter>Header Files\ip\tcp</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\webstur\ip\tcp\tcpserver.h">
+      <Filter>Header Files\ip\tcp</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\webstur\ip\tcp\simple\simpletcpserver.h">
+      <Filter>Header Files\ip\tcp\simple</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\webstur\ip\tcp\file\filetcpserver.h">
+      <Filter>Header Files\ip\tcp\file</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\webstur\ip\tcp\file\filetcpclient.h">
+      <Filter>Header Files\ip\tcp\file</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -68,17 +101,23 @@
     <ClCompile Include="utils.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="ip\udpclient.cpp">
-      <Filter>Source Files\ip</Filter>
+    <ClCompile Include="ip\udp\udpclient.cpp">
+      <Filter>Source Files\ip\udp</Filter>
     </ClCompile>
-    <ClCompile Include="ip\udpserver.cpp">
-      <Filter>Source Files\ip</Filter>
+    <ClCompile Include="ip\udp\udpserver.cpp">
+      <Filter>Source Files\ip\udp</Filter>
     </ClCompile>
-    <ClCompile Include="ip\tcpserver.cpp">
-      <Filter>Source Files\ip</Filter>
+    <ClCompile Include="ip\tcp\tcpserver.cpp">
+      <Filter>Source Files\ip\tcp</Filter>
     </ClCompile>
-    <ClCompile Include="ip\simpletcpserver.cpp">
-      <Filter>Source Files\ip</Filter>
+    <ClCompile Include="ip\tcp\simple\simpletcpserver.cpp">
+      <Filter>Source Files\ip\tcp\simple</Filter>
+    </ClCompile>
+    <ClCompile Include="ip\tcp\file\filetcpserver.cpp">
+      <Filter>Source Files\ip\tcp\file</Filter>
+    </ClCompile>
+    <ClCompile Include="ip\tcp\file\filetcpclient.cpp">
+      <Filter>Source Files\ip\tcp\file</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

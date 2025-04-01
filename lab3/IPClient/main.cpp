@@ -2,7 +2,7 @@
 #include <WinSock2.h>
 #include <algorithm>
 #include <webstur/utils.h>
-#include <webstur/ip/udpclient.h>
+#include <webstur/ip/udp/udpclient.h>
 
 int main() {
 	try {

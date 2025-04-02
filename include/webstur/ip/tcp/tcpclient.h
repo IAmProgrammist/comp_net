@@ -14,13 +14,13 @@ protected:
 	int server_port;
 
 	// Метод, вызываемый при установлении соединения с сервером
-	virtual void onConnect(SOCKET server) = 0;
+	virtual void onConnect() = 0;
 	// Метод, вызываемый при разрыве соединения с сервером
 	// Переданный сокет уже не является действительным, 
 	// однако передаётся для отладочной информации
-	virtual void onDisconnect(SOCKET server) = 0;
+	virtual void onDisconnect() = 0;
 	// Метод, вызываемый при отправке получении сообщения от сервера
-	virtual void onMessage(SOCKET server, const std::vector<char>& message) = 0;
+	virtual void onMessage(const std::vector<char>& message) = 0;
 	// Отправляет данные message TCP-серверу
 	void sendMessage(std::istream& message);
 public:
@@ -38,10 +38,12 @@ public:
 	void request(char* payload, int payload_size);
 	// Отобразить информацию о клиенте
 	std::ostream& printClientInfo(std::ostream& out);
+	// Разорвать соедиение
+	void disconnect();
 
 private:
 	// Синхронное ожидание остановки сервера
 	void waitForClientStop();
 	// Метод для работы с сервером
-	virtual void connection() = 0;
+	void connection();
 };

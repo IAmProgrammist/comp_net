@@ -28,7 +28,7 @@ void TCPClient::shutdown() {
 	delete this->current_runner;
 }
 
-TCPClient::TCPClient(std::string address, int port) {
+TCPClient::TCPClient(std::string address, int port) : server_address(address), server_port(port) {
 	this->should_run = new std::atomic<bool>(false);
 	this->running = new std::atomic<bool>(false);
 
@@ -98,7 +98,7 @@ void TCPClient::start() {
 	// Подготавливаем рабочий поток
 	delete this->current_runner;
 	*this->should_run = true;
-	this->current_runner = new std::thread(TCPClient::connection, this);
+	this->current_runner = new std::thread(&TCPClient::connection, this);
 	this->current_runner->detach();
 }
 
@@ -125,13 +125,15 @@ std::ostream& TCPClient::printClientInfo(std::ostream& out) {
 }
 
 void TCPClient::connection() {
-	*this->running = true;
 	std::clog << "Starting TCP client" << std::endl;
 	// Запуск TCP-сервера
-	try {
 
+	// Устанавливаем флаг работы в true
+	*this->running = true;
+
+	try {
 		sockaddr_in bind_addr;
-		inet_pton(AF_INET, &this->server_address[0], &bind_addr);
+		inet_pton(AF_INET, &this->server_address[0], &(bind_addr.sin_addr));
 		bind_addr.sin_family = AF_INET;
 		bind_addr.sin_port = htons(this->server_port);
 
@@ -140,16 +142,74 @@ void TCPClient::connection() {
 			throw std::runtime_error(getErrorTextWithWSAErrorCode("Couldn't connect to server at " +
 				this->server_address + ":" + std::to_string(this->server_port)));
 
+		// Оповещаем при помощи метода onConnect что получено новое соединение
+		this->onConnect();
+
+		std::vector<char> buffer(0, TCP_MAX_MESSAGE_SIZE);
+		FD_SET readfds;
+		timeval timeout;
+		timeout.tv_sec = TCP_SERVER_TIMEOUT_S;
+		timeout.tv_usec = 0;
+		bool outer_close = false;
+		while (*this->should_run) {
+			FD_ZERO(&readfds);
+			FD_SET(this->socket_descriptor, &readfds);
+
+			std::clog << "Waiting for server input" << std::endl;
+			// Получить количество соединений для текущего сокета с таймаутом
+			int to_read = select(0, &readfds, nullptr, nullptr, &timeout);
+			if (to_read == SOCKET_ERROR) {
+				// Если сокет закрыт извне, можно выйти из цикла
+				if (WSAGetLastError() == 10038) {
+					outer_close = true;
+					break;
+				}
+
+				std::cerr << getErrorTextWithWSAErrorCode("Couldn't select for socket") << std::endl;
+			}
+			else if (to_read > 0) {
+				std::clog << "A server input received" << std::endl;
+				int bytes_read;
+				buffer.resize(TCP_MAX_MESSAGE_SIZE);
+				// Если соединения есть, получаем его и запускаем поток для обработки
+				if ((bytes_read = recv(
+					this->socket_descriptor,
+					&buffer[0],
+					buffer.size(),
+					0
+				)) == SOCKET_ERROR) {
+					std::cerr << getErrorTextWithWSAErrorCode("Couldnt get answer from a server") << std::endl;
+					// Связь разорвана, выйти из цикла
+					break;
+				}
+				else if (bytes_read != 0) {
+					// Получено сообщение, оповестить при помощи метода onMessage
+					buffer.resize(bytes_read);
+					this->onMessage(buffer);
+				}
+				else break;
+			}
+		}
+
+		std::clog << "Closing client socket" << std::endl;
 		// Закрываем сокет
-		if (closesocket(this->socket_descriptor) == SOCKET_ERROR)
-			throw std::runtime_error(getErrorTextWithWSAErrorCode("Couldn't connect to server at "));
+		if (!outer_close && closesocket(this->socket_descriptor) == SOCKET_ERROR)
+			std::cerr << getErrorTextWithWSAErrorCode("Unable to close client socket");
 	}
-	catch (std::runtime_error& er) {
-		std::cerr << er.what() << std::endl;
+	catch (...) {
+		std::cerr << "An error occured while handling server connection" << std::endl;
 	}
 
-	closesocket(this->socket_descriptor);
+	// Оповещаем при помощи метода onDisconnect о разрыве соединения
+	this->onDisconnect();
+
+	// Устанавливаем флаг работы в false
 	*this->running = true;
+}
+
+void TCPClient::disconnect() {
+	if (closesocket(this->socket_descriptor) == SOCKET_ERROR)
+		throw std::runtime_error(getErrorTextWithWSAErrorCode("Couldn't disconnect from server"));
 }
 
 void TCPClient::request() {

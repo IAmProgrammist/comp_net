@@ -84,6 +84,9 @@
     <ClInclude Include="..\..\include\webstur\ip\tcp\file\filetcpclient.h">
       <Filter>Header Files\ip\tcp\file</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\include\webstur\ip\tcp\simple\simpletcpclient.h">
+      <Filter>Header Files\ip\tcp\simple</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="dllmain.cpp">
@@ -121,6 +124,9 @@
     </ClCompile>
     <ClCompile Include="ip\tcp\tcpclient.cpp">
       <Filter>Source Files\ip\tcp</Filter>
+    </ClCompile>
+    <ClCompile Include="ip\tcp\simple\simpletcpclient.cpp">
+      <Filter>Source Files\ip\tcp\simple</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

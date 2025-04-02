@@ -1,7 +1,9 @@
 #include <iostream>
+#include <fstream>
 #include <webstur/ip/tcp/file/filetcpserver.h>
 
 int main() {
+	std::ifstream read_file("C:/LoremIpsum.txt", std::ios::binary);
 	IServer::init();
 	TCPServer* server = new FileTCPServer();
 	server->start();

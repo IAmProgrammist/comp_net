@@ -9,8 +9,10 @@ void FileTCPServer::onMessage(SOCKET client, const std::vector<char>& message) {
 	std::clog << "A file at '" << file_path << "' is requested" << std::endl;
 
 	// Открыть файл
-	std::ifstream read_file(file_path);
+	std::ifstream read_file(file_path, std::ios::binary);
+	// Отправить файл
 	this->sendMessage(client, read_file);	
+	// Закрыть соединение
 	this->disconnect(client);
 }
 

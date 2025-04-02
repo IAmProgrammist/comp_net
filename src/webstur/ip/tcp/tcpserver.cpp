@@ -39,6 +39,9 @@ TCPServer::~TCPServer() {
 	std::clog << "Stopping worker thread" << std::endl;
 	// Приостанавливаем рабочий поток
 	this->shutdown();
+	this->waitForServerStop();
+	delete this->current_runner;
+	delete this->current_threads_amount;
 
 	std::clog << "Closing socket" << std::endl;
 	// Закрываем сокет
@@ -98,11 +101,7 @@ void TCPServer::shutdown() {
 
 	std::clog << "Stopping server" << std::endl;
 	// Указываем что серверу нужно приостановиться
-	// и ждём пока он остановится
 	*this->should_run = false;
-	this->waitForServerStop();
-	delete this->current_runner;
-	delete this->current_threads_amount;
 }
 
 void TCPServer::waitForServerStop() {

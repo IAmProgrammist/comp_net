@@ -3,7 +3,7 @@
 
 int main() {
 	IClient::init();
-	TCPClient* client = new SimpleTCPClient(std::string("192.168.1.175"), 23);
+	TCPClient* client = new SimpleTCPClient(std::string("192.168.22.47"), 23);
 	client->start();
 	client->printClientInfo(std::cout);
 	while (true) {

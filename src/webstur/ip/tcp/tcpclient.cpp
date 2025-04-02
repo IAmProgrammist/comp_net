@@ -2,12 +2,15 @@
 #include <istream>
 #include <iostream>
 #include <sstream>
+#include <chrono>
 #include <WS2tcpip.h>
 #include <webstur/ip/tcp/tcpclient.h>
 
 void TCPClient::request(char* payload, int payload_size) {
 	// Подключиться к серверу
 	this->start();
+	// Ждём запуска клиента
+	this->waitForClientStart();
 	// Отправить сообщение
 	auto request_stream = std::istringstream(payload != nullptr ? 
 		std::string(payload, payload + payload_size) : "");
@@ -22,10 +25,7 @@ void TCPClient::shutdown() {
 
 	std::clog << "Stopping client" << std::endl;
 	// Указываем что клиенту нужно приостановиться
-	// и ждём пока он остановится
 	*this->should_run = false;
-	waitForClientStop();
-	delete this->current_runner;
 }
 
 TCPClient::TCPClient(std::string address, int port) : server_address(address), server_port(port) {
@@ -56,8 +56,10 @@ TCPClient::TCPClient(std::string address, int port) : server_address(address), s
 
 TCPClient::~TCPClient() {
 	std::clog << "Stopping worker thread" << std::endl;
-	// Приостанавливаем рабочий поток
+	// Приостанавливаем рабочий поток и ждём пока он закончит работу
 	this->shutdown();
+	waitForClientStop();
+	delete this->current_runner;
 
 	std::clog << "Closing socket" << std::endl;
 	// Закрываем сокет
@@ -69,7 +71,12 @@ TCPClient::~TCPClient() {
 }
 
 void TCPClient::waitForClientStop() {
+	auto start = std::chrono::high_resolution_clock::now();
 	while (*this->running) {
+		auto new_time = std::chrono::high_resolution_clock::now();
+
+		if (std::chrono::duration_cast<std::chrono::seconds>(new_time - start).count() > 3 * TCP_SERVER_TIMEOUT_S)
+			throw std::runtime_error("Wait timeout reached");
 	}
 }
 
@@ -204,12 +211,18 @@ void TCPClient::connection() {
 	this->onDisconnect();
 
 	// Устанавливаем флаг работы в false
-	*this->running = true;
+	*this->running = false;
+	*this->should_run = false;
 }
 
-void TCPClient::disconnect() {
-	if (closesocket(this->socket_descriptor) == SOCKET_ERROR)
-		throw std::runtime_error(getErrorTextWithWSAErrorCode("Couldn't disconnect from server"));
+void TCPClient::waitForClientStart() {
+	auto start = std::chrono::high_resolution_clock::now();
+	while (!(*this->running)) {
+		auto new_time = std::chrono::high_resolution_clock::now();
+
+		if (std::chrono::duration_cast<std::chrono::seconds>(new_time - start).count() > 3 * TCP_SERVER_TIMEOUT_S)
+			throw std::runtime_error("Wait timeout reached");
+	}
 }
 
 void TCPClient::request() {

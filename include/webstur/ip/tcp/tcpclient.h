@@ -28,7 +28,7 @@ public:
 	TCPClient(std::string address, int port = TCP_SERVER_DEFAULT_PORT);
 	// Освобождает ресурсы клиента
 	~TCPClient();
-	// Приостановить работу клиеента
+	// Приостановить работу клиента
 	void shutdown();
 	// Устанавливает соединение с сервером
 	void start();
@@ -38,12 +38,12 @@ public:
 	void request(char* payload, int payload_size);
 	// Отобразить информацию о клиенте
 	std::ostream& printClientInfo(std::ostream& out);
-	// Разорвать соедиение
-	void disconnect();
-
+	
 private:
 	// Синхронное ожидание остановки сервера
 	void waitForClientStop();
+	// Синхронное ожидание старта сервера
+	void waitForClientStart();
 	// Метод для работы с сервером
 	void connection();
 };

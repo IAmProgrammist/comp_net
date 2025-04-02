@@ -84,7 +84,7 @@ sockaddr_in getDeviceAddrInfo() {
 			memcpy(&device_sockaddr, ptr->ai_addr, sizeof(device_sockaddr));
 			// Плохой костыль, нужно было использовать GetAdaptersInfo
 			// Иначе не получится найти нужный айпишник с гейтвеем на роутер
-			if (device_sockaddr.sin_addr.S_un.S_un_b.s_b3 > 10) {
+			if (false/*device_sockaddr.sin_addr.S_un.S_un_b.s_b3 > 10*/) {
 				continue;
 			}
 			

@@ -125,14 +125,13 @@ void TCPServer::serve() {
 		FD_ZERO(&readfds);
 		FD_SET(this->socket_descriptor, &readfds);
 
-		std::clog << "Waiting for client connections" << std::endl;
 		// ѕолучить количество соединений дл€ текущего сокета с таймаутом
 		int connections_amount = select(0, &readfds, nullptr, nullptr, &timeout);
 		if (connections_amount == SOCKET_ERROR) {
 			std::cerr << getErrorTextWithWSAErrorCode("Couldn't select for socket") << std::endl;
 		}
 		else if (connections_amount > 0) {
-			std::clog << "Waiting for client connections" << std::endl;
+			std::clog << "A pending connection is detected" << std::endl;
 			// ≈сли соединени€ есть, получаем его и запускаем поток дл€ обработки
 			SOCKET client_descriptor = accept(
 				socket_descriptor,
@@ -172,7 +171,6 @@ void TCPServer::serveClient(SOCKET client) {
 			FD_ZERO(&readfds);
 			FD_SET(client, &readfds);
 
-			std::clog << "Waiting for client input" << std::endl;
 			// ѕолучить количество соединений дл€ текущего сокета с таймаутом
 			int to_read = select(0, &readfds, nullptr, nullptr, &timeout);
 			if (to_read == SOCKET_ERROR) {
@@ -185,7 +183,7 @@ void TCPServer::serveClient(SOCKET client) {
 				std::cerr << getErrorTextWithWSAErrorCode("Couldn't select for socket") << std::endl;
 			}
 			else if (to_read > 0) {
-				std::clog << "A client input received" << std::endl;
+				std::clog << "A client connection received" << std::endl;
 				int bytes_read;
 				buffer.resize(TCP_MAX_MESSAGE_SIZE);
 				// ≈сли соединени€ есть, получаем его и запускаем поток дл€ обработки
@@ -230,7 +228,8 @@ void TCPServer::sendMessage(SOCKET client, std::istream& message) {
 	
 	// ќтправить данные клиенту
 	while (!message.eof()) {
-		auto bytes_read = message.readsome(buffer, sizeof(buffer));
+		message.read(buffer, sizeof(buffer));
+		auto bytes_read = message.gcount();
 
 		if (bytes_read == 0) break;
 

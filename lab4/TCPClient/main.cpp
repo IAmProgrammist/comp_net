@@ -1,11 +1,10 @@
 #include <iostream>
-#include <webstur/ip/tcp/simple/simpletcpclient.h>
+#include <webstur/ip/tcp/file/filetcpclient.h>
 
 int main() {
 	IClient::init();
-	TCPClient* client = new SimpleTCPClient(std::string("192.168.22.47"), 23);
-	client->start();
-	client->printClientInfo(std::cout);
+	TCPClient* client = new FileTCPClient(std::string("192.168.1.175"), 3178);
+	client->request((char *)"C:\\Users\\vladi\\Downloads\\big_file.iso", 38);
 	while (true) {
 	}
 	delete client;

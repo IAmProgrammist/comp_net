@@ -85,7 +85,8 @@ void TCPClient::sendMessage(std::istream& message) {
 
 	// Отправить данные клиенту
 	while (!message.eof()) {
-		auto bytes_read = message.readsome(buffer, sizeof(buffer));
+		message.read(buffer, sizeof(buffer));
+		auto bytes_read = message.gcount();
 
 		if (bytes_read == 0) break;
 
@@ -135,9 +136,6 @@ void TCPClient::connection() {
 	std::clog << "Starting TCP client" << std::endl;
 	// Запуск TCP-сервера
 
-	// Устанавливаем флаг работы в true
-	*this->running = true;
-
 	try {
 		sockaddr_in bind_addr;
 		inet_pton(AF_INET, &this->server_address[0], &(bind_addr.sin_addr));
@@ -148,6 +146,9 @@ void TCPClient::connection() {
 		if (connect(this->socket_descriptor, (sockaddr*)&bind_addr, sizeof(bind_addr)) == SOCKET_ERROR)
 			throw std::runtime_error(getErrorTextWithWSAErrorCode("Couldn't connect to server at " +
 				this->server_address + ":" + std::to_string(this->server_port)));
+
+		// Устанавливаем флаг работы в true
+		*this->running = true;
 
 		// Оповещаем при помощи метода onConnect что получено новое соединение
 		this->onConnect();
@@ -162,7 +163,6 @@ void TCPClient::connection() {
 			FD_ZERO(&readfds);
 			FD_SET(this->socket_descriptor, &readfds);
 
-			std::clog << "Waiting for server input" << std::endl;
 			// Получить количество соединений для текущего сокета с таймаутом
 			int to_read = select(0, &readfds, nullptr, nullptr, &timeout);
 			if (to_read == SOCKET_ERROR) {
@@ -175,7 +175,6 @@ void TCPClient::connection() {
 				std::cerr << getErrorTextWithWSAErrorCode("Couldn't select for socket") << std::endl;
 			}
 			else if (to_read > 0) {
-				std::clog << "A server input received" << std::endl;
 				int bytes_read;
 				buffer.resize(TCP_MAX_MESSAGE_SIZE);
 				// Если соединения есть, получаем его и запускаем поток для обработки

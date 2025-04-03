@@ -2,8 +2,8 @@
 #include <iostream>
 #include <webstur/ip/tcp/file/filetcpclient.h>
 
-FileTCPClient::FileTCPClient(std::string request_file, std::string address, int port, std::string save_path): 
-	TCPClient(address, port), save_path(save_path), request_file(request_file) {
+FileTCPClient::FileTCPClient(std::string address, int port, std::string save_path): 
+	TCPClient(address, port), save_path(save_path) {
 }
 
 void FileTCPClient::onConnect() {

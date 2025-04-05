@@ -163,7 +163,7 @@ void TCPClient::connection() {
 			FD_ZERO(&readfds);
 			FD_SET(this->socket_descriptor, &readfds);
 
-			// Получить количество соединений для текущего сокета с таймаутом
+			// Получить количество сообщений для текущего сокета с таймаутом
 			int to_read = select(0, &readfds, nullptr, nullptr, &timeout);
 			if (to_read == SOCKET_ERROR) {
 				// Если сокет закрыт извне, можно выйти из цикла
@@ -177,7 +177,7 @@ void TCPClient::connection() {
 			else if (to_read > 0) {
 				int bytes_read;
 				buffer.resize(TCP_MAX_MESSAGE_SIZE);
-				// Если соединения есть, получаем его и запускаем поток для обработки
+				// Если данные есть
 				if ((bytes_read = recv(
 					this->socket_descriptor,
 					&buffer[0],

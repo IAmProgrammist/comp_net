@@ -171,7 +171,7 @@ void TCPServer::serveClient(SOCKET client) {
 			FD_ZERO(&readfds);
 			FD_SET(client, &readfds);
 
-			// Получить количество соединений для текущего сокета с таймаутом
+			// Получить количество сообщений для текущего сокета с таймаутом
 			int to_read = select(0, &readfds, nullptr, nullptr, &timeout);
 			if (to_read == SOCKET_ERROR) {
 				// Если сокет закрыт извне, можно выйти из цикла

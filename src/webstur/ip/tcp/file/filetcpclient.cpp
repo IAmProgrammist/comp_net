@@ -9,22 +9,23 @@ FileTCPClient::FileTCPClient(std::string address, int port, std::string save_pat
 void FileTCPClient::onConnect() {
 	std::clog << "A file server connection established, opening a file to write" << std::endl;
 
-	// Îòêðûâàåì ôàéë äëÿ çàïèñè
+	// ÐžÑ‚ÐºÑ€Ñ‹Ð²Ð°ÐµÐ¼ Ñ„Ð°Ð¹Ð» Ð´Ð»Ñ Ð·Ð°Ð¿Ð¸ÑÐ¸
 	this->save_file = std::ofstream(save_path, std::ios::binary);
 
 	if (!this->save_file.good()) {
 		this->shutdown();
 		throw std::invalid_argument("Couldn't open file for saving at '" + save_path + "'");
 	}
+	std::clog << "Saving response at '" << this->save_path << "'" << std::endl;
 }
 
 void FileTCPClient::onDisconnect() {
-	// Ñîõðàíÿåì ôàéë
+	// Ð¡Ð¾Ñ…Ñ€Ð°Ð½ÑÐµÐ¼ Ñ„Ð°Ð¹Ð»
 	this->save_file.flush();
 	this->save_file.close();
 }
 
 void FileTCPClient::onMessage(const std::vector<char>& message) {
-	// Ïèøåì ñîîáùåíèå â ôàéë
+	// ÐŸÐ¸ÑˆÐµÐ¼ ÑÐ¾Ð¾Ð±Ñ‰ÐµÐ½Ð¸Ðµ Ð² Ñ„Ð°Ð¹Ð»
 	this->save_file.write(&message[0], message.size());
 }

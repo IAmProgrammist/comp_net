@@ -31,27 +31,6 @@ void TCPClient::shutdown() {
 TCPClient::TCPClient(std::string address, int port) : server_address(address), server_port(port) {
 	this->should_run = new std::atomic<bool>(false);
 	this->running = new std::atomic<bool>(false);
-
-	std::clog << "Creating socket" << std::endl;
-
-	// Создаём сокет
-	this->socket_descriptor = socket(
-		AF_INET,
-		SOCK_STREAM,
-		IPPROTO_TCP
-	);
-
-	std::clog << "Creating socket bind addr" << std::endl;
-	// Создаём адрес к которому привяжется сокет
-	sockaddr_in bind_addr;
-	bind_addr.sin_family = AF_INET;
-	bind_addr.sin_addr = getDeviceAddrInfo().sin_addr;
-	bind_addr.sin_port = 0;
-
-	std::clog << "Binding socket" << std::endl;
-	// Привязать сокет к адресу
-	if (bind(this->socket_descriptor, (sockaddr*)&bind_addr, sizeof(bind_addr)) == SOCKET_ERROR)
-		throw std::runtime_error(getErrorTextWithWSAErrorCode("Unable to bind socket descriptor"));
 }
 
 TCPClient::~TCPClient() {
@@ -101,6 +80,27 @@ void TCPClient::start() {
 		std::clog << "UDPClient is already running" << std::endl;
 		return;
 	}
+
+	std::clog << "Creating socket" << std::endl;
+
+	// Создаём сокет
+	this->socket_descriptor = socket(
+		AF_INET,
+		SOCK_STREAM,
+		IPPROTO_TCP
+	);
+
+	std::clog << "Creating socket bind addr" << std::endl;
+	// Создаём адрес к которому привяжется сокет
+	sockaddr_in bind_addr;
+	bind_addr.sin_family = AF_INET;
+	bind_addr.sin_addr = getDeviceAddrInfo().sin_addr;
+	bind_addr.sin_port = 0;
+
+	std::clog << "Binding socket" << std::endl;
+	// Привязать сокет к адресу
+	if (bind(this->socket_descriptor, (sockaddr*)&bind_addr, sizeof(bind_addr)) == SOCKET_ERROR)
+		throw std::runtime_error(getErrorTextWithWSAErrorCode("Unable to bind socket descriptor"));
 
 	std::clog << "Starting client" << std::endl;
 	// Подготавливаем рабочий поток

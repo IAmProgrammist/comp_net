@@ -2,7 +2,7 @@
 #include <WinSock2.h>
 #include <algorithm>
 #include <webstur/utils.h>
-#include <webstur/ip/udpclient.h>
+#include <webstur/ip/udp/udpclient.h>
 
 int main() {
 	try {
@@ -10,7 +10,7 @@ int main() {
 		IClient::init();
 
 		// Создать клиент
-		IClient* c = new UDPClient();
+		UDPClient* c = new UDPClient();
 
 		// Оставляем клиент работать, пока пользователь не решит его приостановить
 		std::string input;

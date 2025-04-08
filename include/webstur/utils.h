@@ -12,10 +12,14 @@
 #include <WinSock2.h>
 #include <vector>
 
-#define UDP_SERVER_DEFAULT_PORT      0
-#define UDP_CLIENT_DEFAULT_PORT      12484
-#define UDP_IMAGE_FRAGMENT_SIZE      508
-#define IMAGE_FRAGMENT_FILE_SIZE 512
+#define UDP_SERVER_DEFAULT_PORT       0
+#define UDP_CLIENT_DEFAULT_PORT       12484
+#define UDP_IMAGE_FRAGMENT_SIZE       508
+#define IMAGE_FRAGMENT_FILE_SIZE      512
+#define TCP_SERVER_DEFAULT_PORT       3178
+#define TCP_MAX_WORKER_THREADS_AMOUNT 256
+#define TCP_SERVER_TIMEOUT_S          10
+#define TCP_MAX_MESSAGE_SIZE          16000
 
 // Формирует текст ошибки вместе с WSA кодом
 FUNC_DLLEXPORT std::string getErrorTextWithWSAErrorCode(std::string errorText);

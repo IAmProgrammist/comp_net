@@ -164,6 +164,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\include\webstur\arp.h" />
     <ClInclude Include="..\..\include\webstur\iclient.h" />
     <ClInclude Include="..\..\include\webstur\ip\tcp\file\filetcpclient.h" />
     <ClInclude Include="..\..\include\webstur\ip\tcp\file\filetcpserver.h" />
@@ -180,6 +181,7 @@
     <ClInclude Include="pch.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="arp.cpp" />
     <ClCompile Include="dllmain.cpp" />
     <ClCompile Include="iclient.cpp" />
     <ClCompile Include="ip\tcp\file\filetcpclient.cpp" />

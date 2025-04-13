@@ -184,6 +184,7 @@ MIB_IPNET_ROW2 constructArpRow(std::string ip, std::string address, int interfac
 void ARPHelper::addArpEntry(std::string ip, std::string address, int interface_index) {
     // Сконструировать запись для ARP таблицы
     auto new_entry = constructArpRow(ip, address, interface_index);
+    new_entry.State = NlnsPermanent;
 
     // Добавить запись
     int return_code;

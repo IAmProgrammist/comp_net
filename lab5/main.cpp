@@ -1,10 +1,12 @@
 #include <iostream>
 #include <algorithm>
 #include <webstur/arp.h>
+#include <webstur/iserver.h>
 
 int main() {
 	setlocale(LC_ALL, "Russian");
 	try {
+		IServer::init();
 		std::string input;
 		
 		// Считытваем команду пользователя
@@ -64,18 +66,13 @@ int main() {
 				std::cin >> ip_address;
 
 				// Отправить ARP запрос
-				ARPHelper::sendARP(ip_address);
+				std::cout << "Полученный MAC-адрес: " << ARPHelper::sendARP(ip_address) << std::endl;
 			}
 			else if (input == "E") {
 				// Выход из цикла
 				break;
 			}
 		}
-
-		// Приостановить сервер
-		s->shutdown();
-
-		delete s;
 	}
 	catch (const std::runtime_error& error) {
 		std::cerr << "Failed while running server. Caused by: '" << error.what() << "'" << std::endl;

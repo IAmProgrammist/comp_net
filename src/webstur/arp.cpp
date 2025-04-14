@@ -163,7 +163,7 @@ MIB_IPNET_ROW2 constructArpRow(std::string ip, std::string address, int interfac
 
     // Скопировать IP адрес в запись ARP таблицы
     entry.Address.si_family = AF_INET;
-    inet_pton(AF_INET, &address[0], &entry.Address.Ipv4.sin_addr);
+    inet_pton(AF_INET, &ip[0], &entry.Address.Ipv4.sin_addr);
 
     // Скопировать MAC адрес в запись ARP таблицы
     entry.PhysicalAddressLength = 6;
@@ -206,12 +206,12 @@ std::string ARPHelper::sendARP(std::string find) {
     unsigned long size = sizeof(unsigned long) * 2;
     unsigned char mac[sizeof(unsigned long) * 2];
     memset(mac, 0xff, sizeof(mac));
-    unsigned long ip;
+    IPAddr ip;
     inet_pton(AF_INET, &find[0], &ip);
 
     // Отправить ARP запрос
     int return_code;
-    if ((return_code = SendARP((IPAddr) &ip, ADDR_ANY, mac, &size)) == NO_ERROR)
+    if ((return_code = SendARP(ip, ADDR_ANY, mac, &size)) != NO_ERROR)
         throw std::runtime_error("Unable to add entry with error code " + std::to_string(return_code));
 
     // Преобразовать адрес в строку

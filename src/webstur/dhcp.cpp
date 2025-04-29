@@ -27,25 +27,22 @@ void DHCPHelper::detach() {
 addrinfo* DHCPHelper::getAddrInfo(std::string name) {
     addrinfo* res = nullptr;
 
-    std::clog << "Getting addr info" << std::endl;
     if (getaddrinfo(name.c_str(), nullptr, nullptr, &res) != 0)
         throw std::invalid_argument(getErrorTextWithWSAErrorCode("Unable to get addr info"));
 
     return res;
 }
 
-std::string DHCPHelper::getNameInfo(addrinfo ip) {
+std::string DHCPHelper::getNameInfo(sockaddr_in ip) {
     char host[512];
 
-    std::clog << "Getting name info" << std::endl;
-    if (getnameinfo(ip.ai_addr, ip.ai_addrlen, host, sizeof(host), nullptr, 0, 0) != 0)
+    if (getnameinfo((sockaddr*) &ip, sizeof(ip), host, sizeof(host), nullptr, 0, 0) != 0)
         throw std::invalid_argument(getErrorTextWithWSAErrorCode("Unable to get name info"));
 
     return std::string(host, host + strlen(host));
 }
 
-void DHCPHelper::printDHCPServerInfo(std::ostream& out) {
-    std::clog << "Getting interface info" << std::endl;
+std::ostream& DHCPHelper::printDHCPServerInfo(std::ostream& out) {
     ULONG ulOutBufLen = 0;
     PIP_ADAPTER_INFO pInfo = (PIP_ADAPTER_INFO) malloc(sizeof(IP_ADAPTER_INFO));
     PIP_ADAPTER_INFO pAdapter;
@@ -63,11 +60,13 @@ void DHCPHelper::printDHCPServerInfo(std::ostream& out) {
             out << pAdapter->DhcpServer.IpAddress.String << std::endl;
         
             free(pInfo);
-            return;
+            return out;
         }
     }
 
     free(pInfo);
+
+    return out;
 }
 
 void DHCPHelper::renewIP() {

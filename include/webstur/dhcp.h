@@ -5,18 +5,18 @@
 
 class DLLEXPORT DHCPHelper {
 public:
-	// Возвращает информацию об IP адресе по доменному имени
-	//   name             доменное имя
+	// Р’РѕР·РІСЂР°С‰Р°РµС‚ РёРЅС„РѕСЂРјР°С†РёСЋ РѕР± IP Р°РґСЂРµСЃРµ РїРѕ РґРѕРјРµРЅРЅРѕРјСѓ РёРјРµРЅРё
+	//   name             РґРѕРјРµРЅРЅРѕРµ РёРјСЏ
 	static addrinfo* getAddrInfo(std::string name);
-	// Возвращает информацию о доменном имени по IP адресу
-	//   addrinfo         информация об адресе
+	// Р’РѕР·РІСЂР°С‰Р°РµС‚ РёРЅС„РѕСЂРјР°С†РёСЋ Рѕ РґРѕРјРµРЅРЅРѕРј РёРјРµРЅРё РїРѕ IP Р°РґСЂРµСЃСѓ
+	//   addrinfo         РёРЅС„РѕСЂРјР°С†РёСЏ РѕР± Р°РґСЂРµСЃРµ
 	static std::string getNameInfo(sockaddr_in ip);
-	// Выводит информацию о DHCP-сервере
-	static void printDHCPServerInfo(std::ostream& out);
-	// Обновить IP адрес при помощи DHCP
+	// Р’С‹РІРѕРґРёС‚ РёРЅС„РѕСЂРјР°С†РёСЋ Рѕ DHCP-СЃРµСЂРІРµСЂРµ
+	static std::ostream& printDHCPServerInfo(std::ostream& out);
+	// РћР±РЅРѕРІРёС‚СЊ IP Р°РґСЂРµСЃ РїСЂРё РїРѕРјРѕС‰Рё DHCP
 	static void renewIP();
-	// Загружает библиотеку DHCP
+	// Р—Р°РіСЂСѓР¶Р°РµС‚ Р±РёР±Р»РёРѕС‚РµРєСѓ DHCP
 	static void init();
-	// Выгружает библиотеку DHCP
+	// Р’С‹РіСЂСѓР¶Р°РµС‚ Р±РёР±Р»РёРѕС‚РµРєСѓ DHCP
 	static void detach();
 };

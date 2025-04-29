@@ -8,7 +8,7 @@ int main() {
 		DHCPHelper::init();
 		std::string input;
 
-		// Считытваем команду пользователя
+		// РЎС‡РёС‚С‹С‚РІР°РµРј РєРѕРјР°РЅРґСѓ РїРѕР»СЊР·РѕРІР°С‚РµР»СЏ
 		while (true)
 		{
 			std::cout 
@@ -23,13 +23,13 @@ int main() {
 			std::cin.get();
 			std::transform(input.begin(), input.end(), input.begin(), toupper);
 			if (input == "T") {
-				// Ввести имя домена
+				// Р’РІРµСЃС‚Рё РёРјСЏ РґРѕРјРµРЅР°
 				std::cout << "Enter domain name: ";
 				std::cout.flush();
 				std::string name;
 				std::getline(std::cin, name);
 
-				// Получить IP адрес
+				// РџРѕР»СѓС‡РёС‚СЊ IP Р°РґСЂРµСЃ
 				auto result = DHCPHelper::getAddrInfo(name);
 
 				char buf[64];
@@ -38,7 +38,7 @@ int main() {
 				std::cout << "IP address: " << std::string(buf, buf + strlen(buf)) << std::endl;
 			}
 			else if (input == "A") {
-				// Ввести IP адрес
+				// Р’РІРµСЃС‚Рё IP Р°РґСЂРµСЃ
 				sockaddr_in info;
 				info.sin_family = AF_INET;
 				std::cout << "Enter IP address: ";
@@ -50,18 +50,18 @@ int main() {
 				memcpy(buf, name.c_str(), name.size());
 				InetPtonA(AF_INET, buf, &info.sin_addr);
 
-				DHCPHelper::getNameInfo(info);
+				std::cout << "Name: " << DHCPHelper::getNameInfo(info) << std::endl;
 			}
 			else if (input == "D") {
-				// Вывести информацию о сервере
-				DHCPHelper::printDHCPServerInfo(std::cout);
+				// Р’С‹РІРµСЃС‚Рё РёРЅС„РѕСЂРјР°С†РёСЋ Рѕ СЃРµСЂРІРµСЂРµ
+				DHCPHelper::printDHCPServerInfo(std::cout << "DHCP address: ") << std::endl;
 			}
 			else if (input == "S") {
-				// Обновить информацию об IP
+				// РћР±РЅРѕРІРёС‚СЊ РёРЅС„РѕСЂРјР°С†РёСЋ РѕР± IP
 				DHCPHelper::renewIP();
 			}
 			else if (input == "E") {
-				// Выход из цикла
+				// Р’С‹С…РѕРґ РёР· С†РёРєР»Р°
 				break;
 			}
 		}
@@ -72,7 +72,7 @@ int main() {
 		return -1;
 	}
 
-	// Выгрузка библиотеки WSA
+	// Р’С‹РіСЂСѓР·РєР° Р±РёР±Р»РёРѕС‚РµРєРё WSA
 	DHCPHelper::detach();
 
 	return 0;

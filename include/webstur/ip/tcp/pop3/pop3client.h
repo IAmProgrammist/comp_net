@@ -43,7 +43,7 @@ public:
 
 	void onMailList(std::vector<EMLHeader> mail_list);
 
-	void onMail(EMLContent mail_content);
+	void onMail(const EMLContent &mail_content);
 
 	void onMailDelete();
 

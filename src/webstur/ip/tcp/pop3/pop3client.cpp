@@ -85,7 +85,14 @@ void POP3Client::onMessage(const std::vector<char>& message) {
 			break;
 		}
 		case MAIL:
+		{
+			auto break_line_pos = response.find("\r\n");
+			EMLContent dat = {
+				response.substr(break_line_pos + 2)
+			};
+			this->onMail(dat);
 			break;
+		}
 		case DEL:
 			this->onMailDelete();
 			break;

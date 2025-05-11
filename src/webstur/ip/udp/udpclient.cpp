@@ -54,7 +54,7 @@ UDPClient::~UDPClient() {
 	delete this->temporary_data;
 }
 
-void UDPClient::request(char* payload, int payload_size) {
+void UDPClient::request(const char* payload, int payload_size) {
 	// Если клиент уже работает, выходим из него
 	if (*this->running) {
 		std::clog << "UDPClient is already running" << std::endl;

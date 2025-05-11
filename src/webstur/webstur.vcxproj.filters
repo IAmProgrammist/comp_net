@@ -43,18 +43,6 @@
     <Filter Include="Source Files\ip\tcp\file">
       <UniqueIdentifier>{52a0e225-8473-46a0-8cb3-f10a195e05b2}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Header Files\ip\tcp\pop3">
-      <UniqueIdentifier>{814363aa-564a-48ff-963a-883bbce035e4}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Header Files\ip\tcp\smtp">
-      <UniqueIdentifier>{6624a44b-3662-4fe3-9044-2920399b0b4d}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source Files\ip\tcp\pop3">
-      <UniqueIdentifier>{0b37dc0e-5a03-4e90-bf55-d37f57cc1de9}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source Files\ip\tcp\smtp">
-      <UniqueIdentifier>{ca5905a0-430e-4147-beb1-76bc7915a68b}</UniqueIdentifier>
-    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\include\webstur\iclient.h">
@@ -105,11 +93,8 @@
     <ClInclude Include="..\..\include\webstur\dhcp.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\include\webstur\ip\tcp\smtp\smtpclient.h">
-      <Filter>Header Files\ip\tcp\smtp</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\include\webstur\ip\tcp\pop3\pop3client.h">
-      <Filter>Header Files\ip\tcp\pop3</Filter>
+    <ClInclude Include="..\..\include\webstur\ip\tcp\pop3client.h">
+      <Filter>Header Files\ip\tcp</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -158,11 +143,8 @@
     <ClCompile Include="dhcp.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="ip\tcp\pop3\pop3client.cpp">
-      <Filter>Source Files\ip\tcp\pop3</Filter>
-    </ClCompile>
-    <ClCompile Include="ip\tcp\smtp\smtpclient.cpp">
-      <Filter>Source Files\ip\tcp\smtp</Filter>
+    <ClCompile Include="ip\tcp\pop3client.cpp">
+      <Filter>Source Files\ip\tcp</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

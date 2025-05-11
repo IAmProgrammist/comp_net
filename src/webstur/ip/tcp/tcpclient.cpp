@@ -6,7 +6,7 @@
 #include <WS2tcpip.h>
 #include <webstur/ip/tcp/tcpclient.h>
 
-void TCPClient::request(char* payload, int payload_size) {
+void TCPClient::request(const char* payload, int payload_size) {
 	// Подключиться к серверу
 	this->start();
 	// Ждём запуска клиента
@@ -42,9 +42,8 @@ TCPClient::~TCPClient() {
 
 	std::clog << "Closing socket" << std::endl;
 	// Закрываем сокет
-	if (closesocket(this->socket_descriptor) == SOCKET_ERROR)
-		throw std::runtime_error(getErrorTextWithWSAErrorCode("Unable to close socket"));
-
+	closesocket(this->socket_descriptor);
+		
 	delete this->should_run;
 	delete this->running;
 }
@@ -77,7 +76,7 @@ void TCPClient::sendMessage(std::istream& message) {
 void TCPClient::start() {
 	// Если клиент уже работает, выходим из него
 	if (*this->running) {
-		std::clog << "UDPClient is already running" << std::endl;
+		//std::clog << "UDPClient is already running" << std::endl;
 		return;
 	}
 

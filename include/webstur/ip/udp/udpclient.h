@@ -26,7 +26,7 @@ public:
 	void request();
 	// Запускает поток, принимающий пакеты от сервера.
 	// payload и payload_size игнорируется в данной реализации
-	void request(char* payload, int payload_size);
+	void request(const char* payload, int payload_size);
 	// Возвращает true если вся информация от сервера была принята
 	bool isReady();
 	// Возвращает массив с информацией принятой от сервера

@@ -26,5 +26,8 @@
     <ClInclude Include="mypop3client.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="mysmtpclient.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

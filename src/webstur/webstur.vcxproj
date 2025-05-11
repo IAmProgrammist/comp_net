@@ -172,6 +172,7 @@
     <ClInclude Include="..\..\include\webstur\ip\tcp\pop3client.h" />
     <ClInclude Include="..\..\include\webstur\ip\tcp\simple\simpletcpclient.h" />
     <ClInclude Include="..\..\include\webstur\ip\tcp\simple\simpletcpserver.h" />
+    <ClInclude Include="..\..\include\webstur\ip\tcp\smtpclient.h" />
     <ClInclude Include="..\..\include\webstur\ip\tcp\tcpclient.h" />
     <ClInclude Include="..\..\include\webstur\ip\tcp\tcpserver.h" />
     <ClInclude Include="..\..\include\webstur\ip\udp\udpclient.h" />
@@ -192,6 +193,7 @@
     <ClCompile Include="ip\tcp\pop3client.cpp" />
     <ClCompile Include="ip\tcp\simple\simpletcpclient.cpp" />
     <ClCompile Include="ip\tcp\simple\simpletcpserver.cpp" />
+    <ClCompile Include="ip\tcp\smtpclient.cpp" />
     <ClCompile Include="ip\tcp\tcpclient.cpp" />
     <ClCompile Include="ip\tcp\tcpserver.cpp" />
     <ClCompile Include="ip\udp\udpclient.cpp" />

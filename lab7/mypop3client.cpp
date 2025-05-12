@@ -17,11 +17,11 @@ void MyPOP3Client::onMailList(std::vector<EMLHeader> mail_list) {
 void MyPOP3Client::onMail(const EMLContent& mail_content) {
 	std::cout << LOG_PREFIX << "A mail content is received" << std::endl;
 
-	// Ïîëó÷èòü óíèêàëüíîå èìÿ ôàéëà
+	// ÐŸÐ¾Ð»ÑƒÑ‡Ð¸Ñ‚ÑŒ ÑƒÐ½Ð¸ÐºÐ°Ð»ÑŒÐ½Ð¾Ðµ Ð¸Ð¼Ñ Ñ„Ð°Ð¹Ð»Ð°
 	auto unique_filename = getUniqueFilepath();
 	unique_filename = unique_filename.substr(0, unique_filename.size() - 4) + ".rmf";
 	
-	// Îòêðûòü ôàéë
+	// ÐžÑ‚ÐºÑ€Ñ‹Ñ‚ÑŒ Ñ„Ð°Ð¹Ð»
 	std::ofstream out(unique_filename, std::ios::binary);
 
 	if (!out.is_open()) {
@@ -29,10 +29,10 @@ void MyPOP3Client::onMail(const EMLContent& mail_content) {
 		return;
 	}
 
-	// Çàïèñü â ôàéë
+	// Ð—Ð°Ð¿Ð¸ÑÑŒ Ð² Ñ„Ð°Ð¹Ð»
 	out.write(mail_content.data.c_str(), mail_content.data.size());
 
-	// Ñîõðàíèòü è çàêðûòü ôàéë
+	// Ð¡Ð¾Ñ…Ñ€Ð°Ð½Ð¸Ñ‚ÑŒ Ð¸ Ð·Ð°ÐºÑ€Ñ‹Ñ‚ÑŒ Ñ„Ð°Ð¹Ð»
 	out.flush();
 	out.close();
 
@@ -45,7 +45,7 @@ void MyPOP3Client::onMailDelete() {
 
 void MyPOP3Client::onInit() {
 	std::cout << LOG_PREFIX << "A POP3 connection is established" << std::endl;
-	// Îòïðàâèòü çàïðîñ íà ëîãèí
+	// ÐžÑ‚Ð¿Ñ€Ð°Ð²Ð¸Ñ‚ÑŒ Ð·Ð°Ð¿Ñ€Ð¾Ñ Ð½Ð° Ð»Ð¾Ð³Ð¸Ð½
 	POP3Request login_request;
 	login_request.task = POP3Tasks::LOGIN;
 	login_request.arguments.login = this->login.c_str();
@@ -54,7 +54,7 @@ void MyPOP3Client::onInit() {
 
 void MyPOP3Client::onLogin() {
 	std::cout << LOG_PREFIX << "A login is succedeed succesfully" << std::endl;
-	// Îòïðàâèòü çàïðîñ íà ïàðîëü
+	// ÐžÑ‚Ð¿Ñ€Ð°Ð²Ð¸Ñ‚ÑŒ Ð·Ð°Ð¿Ñ€Ð¾Ñ Ð½Ð° Ð¿Ð°Ñ€Ð¾Ð»ÑŒ
 	POP3Request password_request;
 	password_request.task = POP3Tasks::PASSWORD;
 	password_request.arguments.password = this->password.c_str();
@@ -69,7 +69,7 @@ void MyPOP3Client::onPassword() {
 void MyPOP3Client::onQuit() {
 	std::cout << LOG_PREFIX << "A client quitted, you can exit now" << std::endl;
 
-	// Âûêëþ÷èòü êëèåíò
+	// Ð’Ñ‹ÐºÐ»ÑŽÑ‡Ð¸Ñ‚ÑŒ ÐºÐ»Ð¸ÐµÐ½Ñ‚
 	this->shutdown();
 }
 

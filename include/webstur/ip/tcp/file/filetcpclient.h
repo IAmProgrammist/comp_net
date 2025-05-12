@@ -10,10 +10,10 @@ public:
 				  int port = TCP_SERVER_DEFAULT_PORT,
 				  std::string file_path = getUniqueFilepath());
 protected:
-	// Открывает файл для записи
+	// РћС‚РєСЂС‹РІР°РµС‚ С„Р°Р№Р» РґР»СЏ Р·Р°РїРёСЃРё
 	void onConnect();
-	// Сохраняет полученный файл от сервера
+	// РЎРѕС…СЂР°РЅСЏРµС‚ РїРѕР»СѓС‡РµРЅРЅС‹Р№ С„Р°Р№Р» РѕС‚ СЃРµСЂРІРµСЂР°
 	void onDisconnect();
-	// Записывает данные от сервера в файл
+	// Р—Р°РїРёСЃС‹РІР°РµС‚ РґР°РЅРЅС‹Рµ РѕС‚ СЃРµСЂРІРµСЂР° РІ С„Р°Р№Р»
 	void onMessage(const std::vector<char>& message);
 };

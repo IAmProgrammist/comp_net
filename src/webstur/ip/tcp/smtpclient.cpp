@@ -5,12 +5,12 @@
 
 
 void SMTPClient::onConnect() {
-	// Îæèäàåì, ÷òî ïåðâîå ïîëó÷åííîå ñîîáùåíèå áóäåò ñîîáùåíèå èíèöèàëèçàöèè
+	// ÐžÐ¶Ð¸Ð´Ð°ÐµÐ¼, Ñ‡Ñ‚Ð¾ Ð¿ÐµÑ€Ð²Ð¾Ðµ Ð¿Ð¾Ð»ÑƒÑ‡ÐµÐ½Ð½Ð¾Ðµ ÑÐ¾Ð¾Ð±Ñ‰ÐµÐ½Ð¸Ðµ Ð±ÑƒÐ´ÐµÑ‚ ÑÐ¾Ð¾Ð±Ñ‰ÐµÐ½Ð¸Ðµ Ð¸Ð½Ð¸Ñ†Ð¸Ð°Ð»Ð¸Ð·Ð°Ñ†Ð¸Ð¸
 	this->current_task = SMTPTasks::INIT;
 }
 
 void SMTPClient::onDisconnect() {
-	// Íè÷åãî íå äåëàåì
+	// ÐÐ¸Ñ‡ÐµÐ³Ð¾ Ð½Ðµ Ð´ÐµÐ»Ð°ÐµÐ¼
 }
 
 std::string SMTPClient::extractNextResponseFromBuffer() {
@@ -26,11 +26,11 @@ std::string SMTPClient::extractNextResponseFromBuffer() {
 }
 
 void SMTPClient::delegateResponse(const std::string& response) {
-	// Ñáðîñèòü òåêóùóþ çàäà÷ó
+	// Ð¡Ð±Ñ€Ð¾ÑÐ¸Ñ‚ÑŒ Ñ‚ÐµÐºÑƒÑ‰ÑƒÑŽ Ð·Ð°Ð´Ð°Ñ‡Ñƒ
 	auto old_task = this->current_task;
 	this->current_task = SMTPTasks::NONE;
 
-	// Åñëè îòâåò íà÷èíàåòñÿ ñ îøèáêè, òî âûçâàòü ìåòîä-îáðàáîò÷èê îøèáêè
+	// Ð•ÑÐ»Ð¸ Ð¾Ñ‚Ð²ÐµÑ‚ Ð½Ð°Ñ‡Ð¸Ð½Ð°ÐµÑ‚ÑÑ Ñ Ð¾ÑˆÐ¸Ð±ÐºÐ¸, Ñ‚Ð¾ Ð²Ñ‹Ð·Ð²Ð°Ñ‚ÑŒ Ð¼ÐµÑ‚Ð¾Ð´-Ð¾Ð±Ñ€Ð°Ð±Ð¾Ñ‚Ñ‡Ð¸Ðº Ð¾ÑˆÐ¸Ð±ÐºÐ¸
 	if (response.starts_with("4") || response.starts_with("5")) {
 		this->onError(old_task, response);
 		return;
@@ -66,17 +66,17 @@ void SMTPClient::delegateResponse(const std::string& response) {
 }
 
 void SMTPClient::onMessage(const std::vector<char>& message) {
-	// Ñîõðàíèòü îòâåò â áóôåð
+	// Ð¡Ð¾Ñ…Ñ€Ð°Ð½Ð¸Ñ‚ÑŒ Ð¾Ñ‚Ð²ÐµÑ‚ Ð² Ð±ÑƒÑ„ÐµÑ€
 	this->buffer += std::string(message.begin(), message.end());
 
 	while (true) {
 		std::string response = extractNextResponseFromBuffer();
 
-		// Åñëè îòâåò ïóñòîé, âûõîäèì èç ìåòîäà
+		// Ð•ÑÐ»Ð¸ Ð¾Ñ‚Ð²ÐµÑ‚ Ð¿ÑƒÑÑ‚Ð¾Ð¹, Ð²Ñ‹Ñ…Ð¾Ð´Ð¸Ð¼ Ð¸Ð· Ð¼ÐµÑ‚Ð¾Ð´Ð°
 		if (response.empty())
 			return;
 
-		// Åñëè òåêóùàÿ çàäà÷à íå çàäàíà, òàêæå âûõîäèì
+		// Ð•ÑÐ»Ð¸ Ñ‚ÐµÐºÑƒÑ‰Ð°Ñ Ð·Ð°Ð´Ð°Ñ‡Ð° Ð½Ðµ Ð·Ð°Ð´Ð°Ð½Ð°, Ñ‚Ð°ÐºÐ¶Ðµ Ð²Ñ‹Ñ…Ð¾Ð´Ð¸Ð¼
 		if (this->current_task == SMTPTasks::NONE)
 			continue;
 

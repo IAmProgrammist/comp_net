@@ -17,29 +17,29 @@ std::map<POP3Tasks::POP3Tasks, bool> POP3Client::is_multi_line = {
 
 
 void POP3Client::onConnect() {
-	// Îæèäàåì, ÷òî ïåðâîå ïîëó÷åííîå ñîîáùåíèå áóäåò ñîîáùåíèå èíèöèàëèçàöèè
+	// ÐžÐ¶Ð¸Ð´Ð°ÐµÐ¼, Ñ‡Ñ‚Ð¾ Ð¿ÐµÑ€Ð²Ð¾Ðµ Ð¿Ð¾Ð»ÑƒÑ‡ÐµÐ½Ð½Ð¾Ðµ ÑÐ¾Ð¾Ð±Ñ‰ÐµÐ½Ð¸Ðµ Ð±ÑƒÐ´ÐµÑ‚ ÑÐ¾Ð¾Ð±Ñ‰ÐµÐ½Ð¸Ðµ Ð¸Ð½Ð¸Ñ†Ð¸Ð°Ð»Ð¸Ð·Ð°Ñ†Ð¸Ð¸
 	this->current_task = POP3Tasks::INIT;
 }
 
 void POP3Client::onDisconnect() {
-	// Íè÷åãî íå äåëàåì
+	// ÐÐ¸Ñ‡ÐµÐ³Ð¾ Ð½Ðµ Ð´ÐµÐ»Ð°ÐµÐ¼
 }
 
 std::string POP3Client::extractNextResponseFromBuffer() {
-	// Îïðåäåëèòü, ÿâëÿåòñÿ ëè òåêóùèé çàïðîñ ìóëüòèñòðîêîâûì
+	// ÐžÐ¿Ñ€ÐµÐ´ÐµÐ»Ð¸Ñ‚ÑŒ, ÑÐ²Ð»ÑÐµÑ‚ÑÑ Ð»Ð¸ Ñ‚ÐµÐºÑƒÑ‰Ð¸Ð¹ Ð·Ð°Ð¿Ñ€Ð¾Ñ Ð¼ÑƒÐ»ÑŒÑ‚Ð¸ÑÑ‚Ñ€Ð¾ÐºÐ¾Ð²Ñ‹Ð¼
 	auto is_current_task_multi_line_it = this->is_multi_line.find(this->current_task);
 	assert(is_current_task_multi_line_it != this->is_multi_line.end());
 	auto is_current_task_multi_line = is_current_task_multi_line_it->second;
 
 	std::size_t break_line_pos;
 	std::string response;
-	// Çàäà÷à ìóëüòèñòðîêîâàÿ è îòâåò ïîëîæèòåëüíûé
+	// Ð—Ð°Ð´Ð°Ñ‡Ð° Ð¼ÑƒÐ»ÑŒÑ‚Ð¸ÑÑ‚Ñ€Ð¾ÐºÐ¾Ð²Ð°Ñ Ð¸ Ð¾Ñ‚Ð²ÐµÑ‚ Ð¿Ð¾Ð»Ð¾Ð¶Ð¸Ñ‚ÐµÐ»ÑŒÐ½Ñ‹Ð¹
 	if ((break_line_pos = this->buffer.find("\r\n.\r\n")) != std::string::npos &&
 		is_current_task_multi_line &&
 		this->buffer.starts_with("+OK")) {
 		response = this->buffer.substr(0, break_line_pos);
 		this->buffer = this->buffer.substr(break_line_pos + 5);
-		// Çàäà÷à íåìóëüòèñòðîêîâàÿ èëè ìóëüòèñòðîêîâàÿ, íî îòâåò îòðèöàòåëüíûé
+		// Ð—Ð°Ð´Ð°Ñ‡Ð° Ð½ÐµÐ¼ÑƒÐ»ÑŒÑ‚Ð¸ÑÑ‚Ñ€Ð¾ÐºÐ¾Ð²Ð°Ñ Ð¸Ð»Ð¸ Ð¼ÑƒÐ»ÑŒÑ‚Ð¸ÑÑ‚Ñ€Ð¾ÐºÐ¾Ð²Ð°Ñ, Ð½Ð¾ Ð¾Ñ‚Ð²ÐµÑ‚ Ð¾Ñ‚Ñ€Ð¸Ñ†Ð°Ñ‚ÐµÐ»ÑŒÐ½Ñ‹Ð¹
 	}
 	else {
 		break_line_pos = this->buffer.find("\r\n");
@@ -55,11 +55,11 @@ std::string POP3Client::extractNextResponseFromBuffer() {
 }
 
 void POP3Client::delegateResponse(const std::string& response) {
-	// Ñáðîñèòü òåêóùóþ çàäà÷ó
+	// Ð¡Ð±Ñ€Ð¾ÑÐ¸Ñ‚ÑŒ Ñ‚ÐµÐºÑƒÑ‰ÑƒÑŽ Ð·Ð°Ð´Ð°Ñ‡Ñƒ
 	auto old_task = this->current_task;
 	this->current_task = POP3Tasks::NONE;
 
-	// Åñëè îòâåò íà÷èíàåòñÿ ñ îøèáêè, òî âûçâàòü ìåòîä-îáðàáîò÷èê îøèáêè
+	// Ð•ÑÐ»Ð¸ Ð¾Ñ‚Ð²ÐµÑ‚ Ð½Ð°Ñ‡Ð¸Ð½Ð°ÐµÑ‚ÑÑ Ñ Ð¾ÑˆÐ¸Ð±ÐºÐ¸, Ñ‚Ð¾ Ð²Ñ‹Ð·Ð²Ð°Ñ‚ÑŒ Ð¼ÐµÑ‚Ð¾Ð´-Ð¾Ð±Ñ€Ð°Ð±Ð¾Ñ‚Ñ‡Ð¸Ðº Ð¾ÑˆÐ¸Ð±ÐºÐ¸
 	if (response.starts_with("-ERR")) {
 		this->onError(old_task, response.substr(5));
 		return;
@@ -112,17 +112,17 @@ void POP3Client::delegateResponse(const std::string& response) {
 }
 
 void POP3Client::onMessage(const std::vector<char>& message) {
-	// Ñîõðàíèòü îòâåò â áóôåð
+	// Ð¡Ð¾Ñ…Ñ€Ð°Ð½Ð¸Ñ‚ÑŒ Ð¾Ñ‚Ð²ÐµÑ‚ Ð² Ð±ÑƒÑ„ÐµÑ€
 	this->buffer += std::string(message.begin(), message.end());
 
 	while (true) {
 		std::string response = extractNextResponseFromBuffer();
 
-		// Åñëè îòâåò ïóñòîé, âûõîäèì èç ìåòîäà
+		// Ð•ÑÐ»Ð¸ Ð¾Ñ‚Ð²ÐµÑ‚ Ð¿ÑƒÑÑ‚Ð¾Ð¹, Ð²Ñ‹Ñ…Ð¾Ð´Ð¸Ð¼ Ð¸Ð· Ð¼ÐµÑ‚Ð¾Ð´Ð°
 		if (response.empty())
 			return;
 
-		// Åñëè òåêóùàÿ çàäà÷à íå çàäàíà, òàêæå âûõîäèì
+		// Ð•ÑÐ»Ð¸ Ñ‚ÐµÐºÑƒÑ‰Ð°Ñ Ð·Ð°Ð´Ð°Ñ‡Ð° Ð½Ðµ Ð·Ð°Ð´Ð°Ð½Ð°, Ñ‚Ð°ÐºÐ¶Ðµ Ð²Ñ‹Ñ…Ð¾Ð´Ð¸Ð¼
 		if (this->current_task == POP3Tasks::NONE)
 			continue;
 

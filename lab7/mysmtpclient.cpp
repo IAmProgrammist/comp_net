@@ -23,7 +23,7 @@ void MySMTPClient::setDataStream(std::istream& istream) {
 void MySMTPClient::onHello() {
 	std::cout << LOG_PREFIX << "Hello request succeeded. Sending mail from request" << std::endl;
 
-	// Отправить запрос с отправителем
+	// РћС‚РїСЂР°РІРёС‚СЊ Р·Р°РїСЂРѕСЃ СЃ РѕС‚РїСЂР°РІРёС‚РµР»РµРј
 	SMTPRequest request;
 	request.task = SMTPTasks::MAIL;
 	request.arguments.from = this->login.c_str();
@@ -33,7 +33,7 @@ void MySMTPClient::onHello() {
 void MySMTPClient::onMail() {
 	std::cout << LOG_PREFIX << "Mail from request succeeded. Sending recipient request" << std::endl;
 
-	// Отправить запрос с отправителем
+	// РћС‚РїСЂР°РІРёС‚СЊ Р·Р°РїСЂРѕСЃ СЃ РѕС‚РїСЂР°РІРёС‚РµР»РµРј
 	SMTPRequest request;
 	request.task = SMTPTasks::RCPT;
 	request.arguments.to = this->receiver.c_str();
@@ -43,7 +43,7 @@ void MySMTPClient::onMail() {
 void MySMTPClient::onRecipient() {
 	std::cout << LOG_PREFIX << "Recipient to request succeeded. Sending data request" << std::endl;
 
-	// Отправить запрос на отправку данных
+	// РћС‚РїСЂР°РІРёС‚СЊ Р·Р°РїСЂРѕСЃ РЅР° РѕС‚РїСЂР°РІРєСѓ РґР°РЅРЅС‹С…
 	SMTPRequest request;
 	request.task = SMTPTasks::DATA;
 	this->request((const char*)&request, sizeof(request));
@@ -52,11 +52,11 @@ void MySMTPClient::onRecipient() {
 void MySMTPClient::onData() {
 	std::cout << LOG_PREFIX << "Data request succeeded. Sending a data" << std::endl;
 
-	// Считать стрим в массив
+	// РЎС‡РёС‚Р°С‚СЊ СЃС‚СЂРёРј РІ РјР°СЃСЃРёРІ
 	std::vector<char> data_raw(std::istreambuf_iterator<char>(*this->data),
 		std::istreambuf_iterator<char>());
 
-	// Отправить запрос на отправку данных
+	// РћС‚РїСЂР°РІРёС‚СЊ Р·Р°РїСЂРѕСЃ РЅР° РѕС‚РїСЂР°РІРєСѓ РґР°РЅРЅС‹С…
 	SMTPRequest request;
 	request.task = SMTPTasks::DATA_RAW;
 	request.arguments.mail.body = &data_raw[0];
@@ -67,7 +67,7 @@ void MySMTPClient::onData() {
 void MySMTPClient::onDataRaw() {
 	std::cout << LOG_PREFIX << "Data sent. Now we can quit" << std::endl;
 
-	// Отправить запрос на отправку данных
+	// РћС‚РїСЂР°РІРёС‚СЊ Р·Р°РїСЂРѕСЃ РЅР° РѕС‚РїСЂР°РІРєСѓ РґР°РЅРЅС‹С…
 	SMTPRequest request;
 	request.task = SMTPTasks::QUIT;
 	this->request((const char*)&request, sizeof(request));
@@ -76,7 +76,7 @@ void MySMTPClient::onDataRaw() {
 void MySMTPClient::onInit() {
 	std::cout << LOG_PREFIX << "An initial connection established. Sending hello request" << std::endl;
 
-	// Получить имя устройства
+	// РџРѕР»СѓС‡РёС‚СЊ РёРјСЏ СѓСЃС‚СЂРѕР№СЃС‚РІР°
 	char deviceName[1024];
 	unsigned long deviceNameSize = sizeof(deviceName);
 	if (!GetComputerNameA(deviceName, &deviceNameSize)) {
@@ -84,7 +84,7 @@ void MySMTPClient::onInit() {
 		this->shutdown();
 	}
 
-	// Отправить HELLO-запрос
+	// РћС‚РїСЂР°РІРёС‚СЊ HELLO-Р·Р°РїСЂРѕСЃ
 	SMTPRequest request;
 	request.task = SMTPTasks::HELO;
 	request.arguments.helo = deviceName;
@@ -94,13 +94,13 @@ void MySMTPClient::onInit() {
 void MySMTPClient::onQuit() {
 	std::cout << LOG_PREFIX << "SMTP client quitted and says BB!" << std::endl;
 	
-	// Выключить клиент
+	// Р’С‹РєР»СЋС‡РёС‚СЊ РєР»РёРµРЅС‚
 	this->shutdown();
 }
 
 void MySMTPClient::onError(SMTPTasks::SMTPTasks failed_task, std::string response) {
 	std::cout << LOG_PREFIX << "An error occured while send. Error: " << response << std::endl;
 
-	// Выключить клиент
+	// Р’С‹РєР»СЋС‡РёС‚СЊ РєР»РёРµРЅС‚
 	this->shutdown();
 }

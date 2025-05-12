@@ -28,17 +28,17 @@ std::string ARPHelper::getInterfaceIpAddressByIndex(int dwIndex) {
     int dw_ret_val = 0;
     auto flags = GAA_FLAG_SKIP_ANYCAST & GAA_FLAG_SKIP_MULTICAST & GAA_FLAG_SKIP_DNS_SERVER;
 
-    // Получить необходимое место для адреса 
+    // РџРѕР»СѓС‡РёС‚СЊ РЅРµРѕР±С…РѕРґРёРјРѕРµ РјРµСЃС‚Рѕ РґР»СЏ Р°РґСЂРµСЃР° 
     dw_ret_val = GetAdaptersAddresses(AF_INET,
         flags,
         NULL,
         NULL,
         &out_buf_len);
 
-    // Выделить память для адресов
+    // Р’С‹РґРµР»РёС‚СЊ РїР°РјСЏС‚СЊ РґР»СЏ Р°РґСЂРµСЃРѕРІ
     p_addresses = (PIP_ADAPTER_ADDRESSES)malloc(out_buf_len);
 
-    // Получаем таблицу интерфейсов
+    // РџРѕР»СѓС‡Р°РµРј С‚Р°Р±Р»РёС†Сѓ РёРЅС‚РµСЂС„РµР№СЃРѕРІ
     dw_ret_val = GetAdaptersAddresses(AF_INET,
         flags,
         NULL,
@@ -50,10 +50,10 @@ std::string ARPHelper::getInterfaceIpAddressByIndex(int dwIndex) {
         throw std::runtime_error("Unable to get adapters table: " + std::to_string(dw_ret_val));
     }
 
-    // Пройтись по всем интерфейсам
+    // РџСЂРѕР№С‚РёСЃСЊ РїРѕ РІСЃРµРј РёРЅС‚РµСЂС„РµР№СЃР°Рј
     PIP_ADAPTER_ADDRESSES p_curr_addresses = p_addresses;
     while (p_curr_addresses) {
-        // Если индекс совпадает с искомым
+        // Р•СЃР»Рё РёРЅРґРµРєСЃ СЃРѕРІРїР°РґР°РµС‚ СЃ РёСЃРєРѕРјС‹Рј
         if (p_curr_addresses->IfIndex == dwIndex) {
             PIP_ADAPTER_UNICAST_ADDRESS p_unicast = p_curr_addresses->FirstUnicastAddress;
             int i = 0;
@@ -62,7 +62,7 @@ std::string ARPHelper::getInterfaceIpAddressByIndex(int dwIndex) {
                 char result[20] = {};
 
                 if (p_unicast->Address.lpSockaddr->sa_family == AF_INET) {
-                    // Скопировать IPv4 адрес и вернуть его
+                    // РЎРєРѕРїРёСЂРѕРІР°С‚СЊ IPv4 Р°РґСЂРµСЃ Рё РІРµСЂРЅСѓС‚СЊ РµРіРѕ
                     sockaddr_in* sa_in = (sockaddr_in*)p_unicast->Address.lpSockaddr;
                     inet_ntop(AF_INET, &(sa_in->sin_addr), result, sizeof(result));
                     free(p_addresses);
@@ -85,7 +85,7 @@ std::string ARPHelper::getInterfaceIpAddressByIndex(int dwIndex) {
 
 
 std::ostream& ARPHelper::printARPTable(std::ostream& out) {
-	// Получить ARP-таблицу
+	// РџРѕР»СѓС‡РёС‚СЊ ARP-С‚Р°Р±Р»РёС†Сѓ
 	PMIB_IPNET_TABLE2 pipTable = NULL;
 	auto status = GetIpNetTable2(AF_INET, &pipTable);
 	if (status != NO_ERROR) 
@@ -93,57 +93,57 @@ std::ostream& ARPHelper::printARPTable(std::ostream& out) {
 	
     std::string last_interface = "";
 
-    // Пройтись по всем записям в таблице
+    // РџСЂРѕР№С‚РёСЃСЊ РїРѕ РІСЃРµРј Р·Р°РїРёСЃСЏРј РІ С‚Р°Р±Р»РёС†Рµ
     for (int i = 0; i < pipTable->NumEntries; i++) {
         std::string interface = getInterfaceIpAddressByIndex(pipTable->Table[i].InterfaceIndex);
 
         if (interface != last_interface) {
-            // Вывести информацию об интерфейсе
-            out << "\nИнтерфейс: " << getInterfaceIpAddressByIndex(pipTable->Table[i].InterfaceIndex) <<
+            // Р’С‹РІРµСЃС‚Рё РёРЅС„РѕСЂРјР°С†РёСЋ РѕР± РёРЅС‚РµСЂС„РµР№СЃРµ
+            out << "\nРРЅС‚РµСЂС„РµР№СЃ: " << getInterfaceIpAddressByIndex(pipTable->Table[i].InterfaceIndex) <<
                 " --- 0x" << std::hex << pipTable->Table[i].InterfaceIndex << "\n" << std::dec;
-            // Вывести колонки
+            // Р’С‹РІРµСЃС‚Рё РєРѕР»РѕРЅРєРё
             out << "  " <<
-                std::left << std::setfill(' ') << std::setw(24) << "Адрес в Интернете" <<
-                std::left << std::setfill(' ') << std::setw(24) << "Физический адрес" <<
-                std::left << std::setfill(' ') << std::setw(24) << "Тип" << std::endl;
+                std::left << std::setfill(' ') << std::setw(24) << "РђРґСЂРµСЃ РІ РРЅС‚РµСЂРЅРµС‚Рµ" <<
+                std::left << std::setfill(' ') << std::setw(24) << "Р¤РёР·РёС‡РµСЃРєРёР№ Р°РґСЂРµСЃ" <<
+                std::left << std::setfill(' ') << std::setw(24) << "РўРёРї" << std::endl;
             
             last_interface = interface;
         }
 
-        // Вывести IP адрес соседа
+        // Р’С‹РІРµСЃС‚Рё IP Р°РґСЂРµСЃ СЃРѕСЃРµРґР°
         char temp_string[16] = {};
         inet_ntop(AF_INET, &pipTable->Table[i].Address.Ipv4.sin_addr, temp_string, sizeof(temp_string));
         out << "  " << std::left << std::setfill(' ') << std::setw(24) << std::string(temp_string, temp_string + strlen(temp_string));
 
-        // Вывести MAC адрес соседа
+        // Р’С‹РІРµСЃС‚Рё MAC Р°РґСЂРµСЃ СЃРѕСЃРµРґР°
         out << std::left << std::setfill(' ') << std::setw(24) << prettyPrintPhysicalAddress(pipTable->Table[i].PhysicalAddress, pipTable->Table[i].PhysicalAddressLength);
         
-        // Вывести тип
+        // Р’С‹РІРµСЃС‚Рё С‚РёРї
         std::string type;
         switch (pipTable->Table[i].State) {
         case NlnsUnreachable:
-            type = "недопустимый";
+            type = "РЅРµРґРѕРїСѓСЃС‚РёРјС‹Р№";
             break;
         case NlnsIncomplete:
-            type = "незавершённый";
+            type = "РЅРµР·Р°РІРµСЂС€С‘РЅРЅС‹Р№";
             break;
         case NlnsProbe:
-            type = "исследуется";
+            type = "РёСЃСЃР»РµРґСѓРµС‚СЃСЏ";
             break;
         case NlnsDelay:
-            type = "задержан";
+            type = "Р·Р°РґРµСЂР¶Р°РЅ";
             break;
         case NlnsStale:
-            type = "устаревший";
+            type = "СѓСЃС‚Р°СЂРµРІС€РёР№";
             break;
         case NlnsReachable:
-            type = "динамический";
+            type = "РґРёРЅР°РјРёС‡РµСЃРєРёР№";
             break;
         case NlnsPermanent:
-            type = "статический";
+            type = "СЃС‚Р°С‚РёС‡РµСЃРєРёР№";
             break;
         case NlnsMaximum:
-            type = "максимальный";
+            type = "РјР°РєСЃРёРјР°Р»СЊРЅС‹Р№";
             break;
         }
         out << std::left << std::setfill(' ') << std::setw(24) << type;
@@ -158,14 +158,14 @@ std::ostream& ARPHelper::printARPTable(std::ostream& out) {
 }
 
 MIB_IPNET_ROW2 constructArpRow(std::string ip, std::string address, int interface_index) {
-    // Инициализировать запись в ARP таблице
+    // РРЅРёС†РёР°Р»РёР·РёСЂРѕРІР°С‚СЊ Р·Р°РїРёСЃСЊ РІ ARP С‚Р°Р±Р»РёС†Рµ
     MIB_IPNET_ROW2 entry = {};
 
-    // Скопировать IP адрес в запись ARP таблицы
+    // РЎРєРѕРїРёСЂРѕРІР°С‚СЊ IP Р°РґСЂРµСЃ РІ Р·Р°РїРёСЃСЊ ARP С‚Р°Р±Р»РёС†С‹
     entry.Address.si_family = AF_INET;
     inet_pton(AF_INET, &ip[0], &entry.Address.Ipv4.sin_addr);
 
-    // Скопировать MAC адрес в запись ARP таблицы
+    // РЎРєРѕРїРёСЂРѕРІР°С‚СЊ MAC Р°РґСЂРµСЃ РІ Р·Р°РїРёСЃСЊ ARP С‚Р°Р±Р»РёС†С‹
     entry.PhysicalAddressLength = 6;
     sscanf_s(&address[0], "%02X:%02X:%02X:%02X:%02X:%02X", 
         &entry.PhysicalAddress[0],
@@ -175,28 +175,28 @@ MIB_IPNET_ROW2 constructArpRow(std::string ip, std::string address, int interfac
         &entry.PhysicalAddress[4], 
         &entry.PhysicalAddress[5]);
 
-    // Скопировать индекс интерфейса в запись ARP таблицы
+    // РЎРєРѕРїРёСЂРѕРІР°С‚СЊ РёРЅРґРµРєСЃ РёРЅС‚РµСЂС„РµР№СЃР° РІ Р·Р°РїРёСЃСЊ ARP С‚Р°Р±Р»РёС†С‹
     entry.InterfaceIndex = interface_index;
 
     return entry;
 }
 
 void ARPHelper::addArpEntry(std::string ip, std::string address, int interface_index) {
-    // Сконструировать запись для ARP таблицы
+    // РЎРєРѕРЅСЃС‚СЂСѓРёСЂРѕРІР°С‚СЊ Р·Р°РїРёСЃСЊ РґР»СЏ ARP С‚Р°Р±Р»РёС†С‹
     auto new_entry = constructArpRow(ip, address, interface_index);
     new_entry.State = NlnsPermanent;
 
-    // Добавить запись
+    // Р”РѕР±Р°РІРёС‚СЊ Р·Р°РїРёСЃСЊ
     int return_code;
     if ((return_code = CreateIpNetEntry2(&new_entry)) != NO_ERROR)
         throw std::runtime_error("Unable to add entry with error code " + std::to_string(return_code));
 } 
 
 void ARPHelper::deleteArpEntry(std::string ip, std::string address, int interface_index) {
-    // Сконструировать запись для ARP таблицы
+    // РЎРєРѕРЅСЃС‚СЂСѓРёСЂРѕРІР°С‚СЊ Р·Р°РїРёСЃСЊ РґР»СЏ ARP С‚Р°Р±Р»РёС†С‹
     auto new_entry = constructArpRow(ip, address, interface_index);
 
-    // Удалить запись
+    // РЈРґР°Р»РёС‚СЊ Р·Р°РїРёСЃСЊ
     int return_code;
     if ((return_code = DeleteIpNetEntry2(&new_entry)) != NO_ERROR)
         throw std::runtime_error("Unable to add entry with error code " + std::to_string(return_code));
@@ -209,11 +209,11 @@ std::string ARPHelper::sendARP(std::string find) {
     IPAddr ip;
     inet_pton(AF_INET, &find[0], &ip);
 
-    // Отправить ARP запрос
+    // РћС‚РїСЂР°РІРёС‚СЊ ARP Р·Р°РїСЂРѕСЃ
     int return_code;
     if ((return_code = SendARP(ip, ADDR_ANY, mac, &size)) != NO_ERROR)
         throw std::runtime_error("Unable to add entry with error code " + std::to_string(return_code));
 
-    // Преобразовать адрес в строку
+    // РџСЂРµРѕР±СЂР°Р·РѕРІР°С‚СЊ Р°РґСЂРµСЃ РІ СЃС‚СЂРѕРєСѓ
     return ARPHelper::prettyPrintPhysicalAddress(mac, size);
 }

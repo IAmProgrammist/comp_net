@@ -10,7 +10,7 @@ TCPServer::TCPServer(int port) {
 
 	std::clog << "Creating socket" << std::endl;
 
-	// Создаём сокет
+	// РЎРѕР·РґР°С‘Рј СЃРѕРєРµС‚
 	this->socket_descriptor = socket(
 		AF_INET,
 		SOCK_STREAM,
@@ -18,33 +18,33 @@ TCPServer::TCPServer(int port) {
 	);
 
 	std::clog << "Creating socket bind addr" << std::endl;
-	// Создаём адрес к которому привяжется сокет
+	// РЎРѕР·РґР°С‘Рј Р°РґСЂРµСЃ Рє РєРѕС‚РѕСЂРѕРјСѓ РїСЂРёРІСЏР¶РµС‚СЃСЏ СЃРѕРєРµС‚
 	sockaddr_in bind_addr;
 	bind_addr.sin_family = AF_INET;
 	bind_addr.sin_addr = getDeviceAddrInfo().sin_addr;
 	bind_addr.sin_port = htons(port);
 
 	std::clog << "Binding socket" << std::endl;
-	// Привязать сокет к адресу
+	// РџСЂРёРІСЏР·Р°С‚СЊ СЃРѕРєРµС‚ Рє Р°РґСЂРµСЃСѓ
 	if (bind(this->socket_descriptor, (sockaddr*)&bind_addr, sizeof(bind_addr)) == SOCKET_ERROR)
 		throw std::runtime_error(getErrorTextWithWSAErrorCode("Unable to bind socket descriptor"));
 
 	std::clog << "Making socket to listen for connections" << std::endl;
-	// Перевести сокет в режим прослушивания
+	// РџРµСЂРµРІРµСЃС‚Рё СЃРѕРєРµС‚ РІ СЂРµР¶РёРј РїСЂРѕСЃР»СѓС€РёРІР°РЅРёСЏ
 	if (listen(this->socket_descriptor, SOMAXCONN) == SOCKET_ERROR)
 		throw std::runtime_error(getErrorTextWithWSAErrorCode("Unable to make socket to listen"));
 }
 
 TCPServer::~TCPServer() {
 	std::clog << "Stopping worker thread" << std::endl;
-	// Приостанавливаем рабочий поток
+	// РџСЂРёРѕСЃС‚Р°РЅР°РІР»РёРІР°РµРј СЂР°Р±РѕС‡РёР№ РїРѕС‚РѕРє
 	this->shutdown();
 	this->waitForServerStop();
 	delete this->current_runner;
 	delete this->current_threads_amount;
 
 	std::clog << "Closing socket" << std::endl;
-	// Закрываем сокет
+	// Р—Р°РєСЂС‹РІР°РµРј СЃРѕРєРµС‚
 	if (closesocket(this->socket_descriptor) == SOCKET_ERROR)
 		throw std::runtime_error(getErrorTextWithWSAErrorCode("Unable to close socket"));
 
@@ -75,13 +75,13 @@ std::ostream& TCPServer::printServerInfo(std::ostream& out) {
 }
 
 void TCPServer::start() {
-	// Если сервер уже работает, выходим из него
+	// Р•СЃР»Рё СЃРµСЂРІРµСЂ СѓР¶Рµ СЂР°Р±РѕС‚Р°РµС‚, РІС‹С…РѕРґРёРј РёР· РЅРµРіРѕ
 	if (*this->running) {
 		std::clog << "Server is already running" << std::endl;
 		return;
 	}
 
-	// Подготавливаем рабочий поток
+	// РџРѕРґРіРѕС‚Р°РІР»РёРІР°РµРј СЂР°Р±РѕС‡РёР№ РїРѕС‚РѕРє
 	delete this->current_runner;
 	delete this->current_threads_amount;
 
@@ -100,39 +100,39 @@ void TCPServer::shutdown() {
 	}
 
 	std::clog << "Stopping server" << std::endl;
-	// Указываем что серверу нужно приостановиться
+	// РЈРєР°Р·С‹РІР°РµРј С‡С‚Рѕ СЃРµСЂРІРµСЂСѓ РЅСѓР¶РЅРѕ РїСЂРёРѕСЃС‚Р°РЅРѕРІРёС‚СЊСЃСЏ
 	*this->should_run = false;
 }
 
 void TCPServer::waitForServerStop() {
-	// Используем спинлок, так как пакеты относительно небольшие и сервер должен 
-	// быстро увидеть что пора заканчивать работу
+	// РСЃРїРѕР»СЊР·СѓРµРј СЃРїРёРЅР»РѕРє, С‚Р°Рє РєР°Рє РїР°РєРµС‚С‹ РѕС‚РЅРѕСЃРёС‚РµР»СЊРЅРѕ РЅРµР±РѕР»СЊС€РёРµ Рё СЃРµСЂРІРµСЂ РґРѕР»Р¶РµРЅ 
+	// Р±С‹СЃС‚СЂРѕ СѓРІРёРґРµС‚СЊ С‡С‚Рѕ РїРѕСЂР° Р·Р°РєР°РЅС‡РёРІР°С‚СЊ СЂР°Р±РѕС‚Сѓ
 	while (*this->running) {
 	}
 }
 
 void TCPServer::serve() {
 	std::clog << "Started TCPServer work" << std::endl;
-	// Устанавливаем флаг работы потока на true
+	// РЈСЃС‚Р°РЅР°РІР»РёРІР°РµРј С„Р»Р°Рі СЂР°Р±РѕС‚С‹ РїРѕС‚РѕРєР° РЅР° true
 	*this->running = true;
 
 	FD_SET readfds;
 	timeval timeout;
 	timeout.tv_sec = TCP_SERVER_TIMEOUT_S;
 	timeout.tv_usec = 0;
-	// Пока сервер должен работать
+	// РџРѕРєР° СЃРµСЂРІРµСЂ РґРѕР»Р¶РµРЅ СЂР°Р±РѕС‚Р°С‚СЊ
 	while (*this->should_run) {
 		FD_ZERO(&readfds);
 		FD_SET(this->socket_descriptor, &readfds);
 
-		// Получить количество соединений для текущего сокета с таймаутом
+		// РџРѕР»СѓС‡РёС‚СЊ РєРѕР»РёС‡РµСЃС‚РІРѕ СЃРѕРµРґРёРЅРµРЅРёР№ РґР»СЏ С‚РµРєСѓС‰РµРіРѕ СЃРѕРєРµС‚Р° СЃ С‚Р°Р№РјР°СѓС‚РѕРј
 		int connections_amount = select(0, &readfds, nullptr, nullptr, &timeout);
 		if (connections_amount == SOCKET_ERROR) {
 			std::cerr << getErrorTextWithWSAErrorCode("Couldn't select for socket") << std::endl;
 		}
 		else if (connections_amount > 0) {
 			std::clog << "A pending connection is detected" << std::endl;
-			// Если соединения есть, получаем его и запускаем поток для обработки
+			// Р•СЃР»Рё СЃРѕРµРґРёРЅРµРЅРёСЏ РµСЃС‚СЊ, РїРѕР»СѓС‡Р°РµРј РµРіРѕ Рё Р·Р°РїСѓСЃРєР°РµРј РїРѕС‚РѕРє РґР»СЏ РѕР±СЂР°Р±РѕС‚РєРё
 			SOCKET client_descriptor = accept(
 				socket_descriptor,
 				nullptr,
@@ -143,22 +143,22 @@ void TCPServer::serve() {
 	}
 
 	std::cout << "Waiting for children threads to stop" << std::endl;
-	// Ждём пока не закончат работу потоки для работы с клиентами
+	// Р–РґС‘Рј РїРѕРєР° РЅРµ Р·Р°РєРѕРЅС‡Р°С‚ СЂР°Р±РѕС‚Сѓ РїРѕС‚РѕРєРё РґР»СЏ СЂР°Р±РѕС‚С‹ СЃ РєР»РёРµРЅС‚Р°РјРё
 	while (*this->current_threads_amount > 0) {
 	}
 
 	std::cout << "TCPServer stopped" << std::endl;
-	// Устанавливаем флаг работы потока на false
+	// РЈСЃС‚Р°РЅР°РІР»РёРІР°РµРј С„Р»Р°Рі СЂР°Р±РѕС‚С‹ РїРѕС‚РѕРєР° РЅР° false
 	*this->running = false;
 }
 
 void TCPServer::serveClient(SOCKET client) {
 	std::clog << "Serving client connection" << std::endl;
-	// Увеличиваем количество текущий потоков
+	// РЈРІРµР»РёС‡РёРІР°РµРј РєРѕР»РёС‡РµСЃС‚РІРѕ С‚РµРєСѓС‰РёР№ РїРѕС‚РѕРєРѕРІ
 	(*this->current_threads_amount)++;
 
 	try {
-		// Оповещаем при помощи метода onConnect что получено новое соединение
+		// РћРїРѕРІРµС‰Р°РµРј РїСЂРё РїРѕРјРѕС‰Рё РјРµС‚РѕРґР° onConnect С‡С‚Рѕ РїРѕР»СѓС‡РµРЅРѕ РЅРѕРІРѕРµ СЃРѕРµРґРёРЅРµРЅРёРµ
 		this->onConnect(client);
 
 		std::vector<char> buffer(0, TCP_MAX_MESSAGE_SIZE);
@@ -171,10 +171,10 @@ void TCPServer::serveClient(SOCKET client) {
 			FD_ZERO(&readfds);
 			FD_SET(client, &readfds);
 
-			// Получить количество сообщений для текущего сокета с таймаутом
+			// РџРѕР»СѓС‡РёС‚СЊ РєРѕР»РёС‡РµСЃС‚РІРѕ СЃРѕРѕР±С‰РµРЅРёР№ РґР»СЏ С‚РµРєСѓС‰РµРіРѕ СЃРѕРєРµС‚Р° СЃ С‚Р°Р№РјР°СѓС‚РѕРј
 			int to_read = select(0, &readfds, nullptr, nullptr, &timeout);
 			if (to_read == SOCKET_ERROR) {
-				// Если сокет закрыт извне, можно выйти из цикла
+				// Р•СЃР»Рё СЃРѕРєРµС‚ Р·Р°РєСЂС‹С‚ РёР·РІРЅРµ, РјРѕР¶РЅРѕ РІС‹Р№С‚Рё РёР· С†РёРєР»Р°
 				if (WSAGetLastError() == 10038) {
 					outer_close = true;
 					break;
@@ -186,7 +186,7 @@ void TCPServer::serveClient(SOCKET client) {
 				std::clog << "A client connection received" << std::endl;
 				int bytes_read;
 				buffer.resize(TCP_MAX_MESSAGE_SIZE);
-				// Если соединения есть, получаем его и запускаем поток для обработки
+				// Р•СЃР»Рё СЃРѕРµРґРёРЅРµРЅРёСЏ РµСЃС‚СЊ, РїРѕР»СѓС‡Р°РµРј РµРіРѕ Рё Р·Р°РїСѓСЃРєР°РµРј РїРѕС‚РѕРє РґР»СЏ РѕР±СЂР°Р±РѕС‚РєРё
 				if ((bytes_read = recv(
 					client,
 					&buffer[0],
@@ -194,11 +194,11 @@ void TCPServer::serveClient(SOCKET client) {
 					0
 				)) == SOCKET_ERROR) {
 					std::cerr << getErrorTextWithWSAErrorCode("Couldnt get answer from a client") << std::endl;
-					// Связь разорвана, выйти из цикла
+					// РЎРІСЏР·СЊ СЂР°Р·РѕСЂРІР°РЅР°, РІС‹Р№С‚Рё РёР· С†РёРєР»Р°
 					break;
 				}
 				else if (bytes_read != 0) {
-					// Получено сообщение, оповестить при помощи метода onMessage
+					// РџРѕР»СѓС‡РµРЅРѕ СЃРѕРѕР±С‰РµРЅРёРµ, РѕРїРѕРІРµСЃС‚РёС‚СЊ РїСЂРё РїРѕРјРѕС‰Рё РјРµС‚РѕРґР° onMessage
 					buffer.resize(bytes_read);
 					this->onMessage(client, buffer);
 				}
@@ -207,7 +207,7 @@ void TCPServer::serveClient(SOCKET client) {
 		}
 
 		std::clog << "Closing client socket" << std::endl;
-		// Закрываем сокет
+		// Р—Р°РєСЂС‹РІР°РµРј СЃРѕРєРµС‚
 		if (!outer_close && closesocket(client) == SOCKET_ERROR)
 			std::cerr << getErrorTextWithWSAErrorCode("Unable to close client socket");
 	}
@@ -215,18 +215,18 @@ void TCPServer::serveClient(SOCKET client) {
 		std::cerr << "An error occured while handling user connection";
 	}
 
-	// Оповещаем при помощи метода onDisconnect о разрыве соединения
+	// РћРїРѕРІРµС‰Р°РµРј РїСЂРё РїРѕРјРѕС‰Рё РјРµС‚РѕРґР° onDisconnect Рѕ СЂР°Р·СЂС‹РІРµ СЃРѕРµРґРёРЅРµРЅРёСЏ
 	this->onDisconnect(client);
 
 	std::clog << "Exiting serve client thread" << std::endl;
-	// Уменьшаем количество текущих потоков
+	// РЈРјРµРЅСЊС€Р°РµРј РєРѕР»РёС‡РµСЃС‚РІРѕ С‚РµРєСѓС‰РёС… РїРѕС‚РѕРєРѕРІ
 	(*this->current_threads_amount)--;
 }
 
 void TCPServer::sendMessage(SOCKET client, std::istream& message) {
 	char buffer[TCP_MAX_MESSAGE_SIZE];
 	
-	// Отправить данные клиенту
+	// РћС‚РїСЂР°РІРёС‚СЊ РґР°РЅРЅС‹Рµ РєР»РёРµРЅС‚Сѓ
 	while (!message.eof()) {
 		message.read(buffer, sizeof(buffer));
 		auto bytes_read = message.gcount();

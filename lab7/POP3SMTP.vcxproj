@@ -21,6 +21,7 @@
   <ItemGroup>
     <ClCompile Include="main.cpp" />
     <ClCompile Include="mypop3client.cpp" />
+    <ClCompile Include="mysmtpclient.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="mypop3client.h" />

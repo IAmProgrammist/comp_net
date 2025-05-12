@@ -14,22 +14,24 @@ struct EMLContent {
 	std::string data;
 };
 
-enum POP3Tasks
-{
-	NONE,
-	LIST,
-	MAIL,
-	DEL,
-	INIT,
-	LOGIN,
-	PASSWORD,
-	QUIT
-};
+namespace POP3Tasks {
+	enum POP3Tasks
+	{
+		NONE,
+		LIST,
+		MAIL,
+		DEL,
+		INIT,
+		LOGIN,
+		PASSWORD,
+		QUIT
+	};
+}
 
 struct POP3Request {
 	POP3Request() {};
 	~POP3Request() {};
-	POP3Tasks task;
+	POP3Tasks::POP3Tasks task;
 	union Arguments {
 		Arguments() {};
 		~Arguments() {};
@@ -42,14 +44,14 @@ struct POP3Request {
 
 class DLLEXPORT POP3Client : public TCPClient {
 private:
-	POP3Tasks current_task;
+	POP3Tasks::POP3Tasks current_task;
 	std::string buffer;
 
 	std::string extractNextResponseFromBuffer();
 	void delegateResponse(const std::string& response);
 
 protected:
-	static std::map<POP3Tasks, bool> is_multi_line;
+	static std::map<POP3Tasks::POP3Tasks, bool> is_multi_line;
 
 	void onConnect();
 	void onDisconnect();
@@ -73,5 +75,5 @@ public:
 
 	virtual	void onQuit() = 0;
 
-	virtual void onError(POP3Tasks failed_task, std::string response) = 0;
+	virtual void onError(POP3Tasks::POP3Tasks failed_task, std::string response) = 0;
 };

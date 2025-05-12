@@ -21,6 +21,9 @@
     <ClCompile Include="mypop3client.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="mysmtpclient.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="mypop3client.h">

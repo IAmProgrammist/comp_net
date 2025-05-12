@@ -2,10 +2,12 @@
 #include <fstream>
 #include "mypop3client.h"
 
+#define LOG_PREFIX "My POP3 client: "
+
 MyPOP3Client::MyPOP3Client(std::string address, std::string login, std::string password) : POP3Client(address), login(login), password(password) {}
 
 void MyPOP3Client::onMailList(std::vector<EMLHeader> mail_list) {
-	std::cout << "A " << mail_list.size() << " mails are not read\n";
+	std::cout << LOG_PREFIX << "A " << mail_list.size() << " mails are not read\n";
 	for (auto& mail : mail_list)
 		std::cout << "  ID: " << mail.id << " Size: " << mail.size << " bytes\n";
 
@@ -13,7 +15,7 @@ void MyPOP3Client::onMailList(std::vector<EMLHeader> mail_list) {
 }
 
 void MyPOP3Client::onMail(const EMLContent& mail_content) {
-	std::cout << "A mail content is received" << std::endl;
+	std::cout << LOG_PREFIX << "A mail content is received" << std::endl;
 
 	// Получить уникальное имя файла
 	auto unique_filename = getUniqueFilepath();
@@ -33,51 +35,53 @@ void MyPOP3Client::onMail(const EMLContent& mail_content) {
 	// Сохранить и закрыть файл
 	out.flush();
 	out.close();
+
+	std::cout << LOG_PREFIX << "A mail is saved at '" << unique_filename << "'" << std::endl;
 }
 
 void MyPOP3Client::onMailDelete() {
-	std::cout << "A mail is deleted successfully" << std::endl;
+	std::cout << LOG_PREFIX << "A mail is deleted successfully" << std::endl;
 }
 
 void MyPOP3Client::onInit() {
-	std::cout << "A POP3 connection is established" << std::endl;
+	std::cout << LOG_PREFIX << "A POP3 connection is established" << std::endl;
 	// Отправить запрос на логин
 	POP3Request login_request;
-	login_request.task = LOGIN;
+	login_request.task = POP3Tasks::LOGIN;
 	login_request.arguments.login = this->login.c_str();
 	this->request((const char*)(&login_request), sizeof(login_request));
 }
 
 void MyPOP3Client::onLogin() {
-	std::cout << "A login is succedeed succesfully" << std::endl;
+	std::cout << LOG_PREFIX << "A login is succedeed succesfully" << std::endl;
 	// Отправить запрос на пароль
 	POP3Request password_request;
-	password_request.task = PASSWORD;
+	password_request.task = POP3Tasks::PASSWORD;
 	password_request.arguments.password = this->password.c_str();
 	this->request((const char*)(&password_request), 
 		sizeof(password_request));
 }
 
 void MyPOP3Client::onPassword() {
-	std::cout << "A password is succedeed succesfully" << std::endl;
+	std::cout << LOG_PREFIX << "A password is succedeed succesfully" << std::endl;
 }
 
 void MyPOP3Client::onQuit() {
-	std::cout << "POP3 server says BB!" << std::endl;
+	std::cout << LOG_PREFIX << "A client quitted, you can exit now" << std::endl;
 	this->shutdown();
 }
 
-void MyPOP3Client::onError(POP3Tasks failed_task, std::string response) {
-	std::cout << "A POP3 failed with error '" << response << 
+void MyPOP3Client::onError(POP3Tasks::POP3Tasks failed_task, std::string response) {
+	std::cout << LOG_PREFIX << "A POP3 failed with error '" << response <<
 		"' for task " << failed_task << std::endl;
 
 	switch (failed_task) {
-	case LOGIN:
-		std::cout << "Invalid login" << std::endl;
+	case POP3Tasks::LOGIN:
+		std::cout << LOG_PREFIX << "Invalid login" << std::endl;
 		this->shutdown();
 		break;
-	case PASSWORD:
-		std::cout << "Invalid password" << std::endl;
+	case POP3Tasks::PASSWORD:
+		std::cout << LOG_PREFIX << "Invalid password" << std::endl;
 		this->shutdown();
 		break;
 	}

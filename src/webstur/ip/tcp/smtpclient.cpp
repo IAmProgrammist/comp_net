@@ -6,7 +6,7 @@
 
 void SMTPClient::onConnect() {
 	// Ожидаем, что первое полученное сообщение будет сообщение инициализации
-	this->current_task = INIT;
+	this->current_task = SMTPTasks::INIT;
 }
 
 void SMTPClient::onDisconnect() {
@@ -28,7 +28,7 @@ std::string SMTPClient::extractNextResponseFromBuffer() {
 void SMTPClient::delegateResponse(const std::string& response) {
 	// Сбросить текущую задачу
 	auto old_task = this->current_task;
-	this->current_task = NONE;
+	this->current_task = SMTPTasks::NONE;
 
 	// Если ответ начинается с ошибки, то вызвать метод-обработчик ошибки
 	if (response.starts_with("4") || response.starts_with("5")) {
@@ -38,22 +38,25 @@ void SMTPClient::delegateResponse(const std::string& response) {
 
 	else {
 		switch (old_task) {
-		case HELO:
-			this->onHelo();
+		case SMTPTasks::INIT:
+			this->onInit();
 			break;
-		case MAIL:
+		case SMTPTasks::HELO:
+			this->onHello();
+			break;
+		case SMTPTasks::MAIL:
 			this->onMail();
 			break;
-		case RCPT:
-			this->onRcpt();
+		case SMTPTasks::RCPT:
+			this->onRecipient();
 			break;
-		case DATA:
+		case SMTPTasks::DATA:
 			this->onData();
 			break;
-		case DATA_RAW:
+		case SMTPTasks::DATA_RAW:
 			this->onDataRaw();
 			break;
-		case QUIT:
+		case SMTPTasks::QUIT:
 			this->onQuit();
 			break;
 		default:
@@ -74,7 +77,7 @@ void SMTPClient::onMessage(const std::vector<char>& message) {
 			return;
 
 		// Если текущая задача не задана, также выходим
-		if (this->current_task == NONE)
+		if (this->current_task == SMTPTasks::NONE)
 			continue;
 
 		this->delegateResponse(response);
@@ -82,9 +85,9 @@ void SMTPClient::onMessage(const std::vector<char>& message) {
 }
 
 void SMTPClient::request(const char* payload, int payload_size) {
-	if (this->current_task != NONE)
+	if (this->current_task != SMTPTasks::NONE)
 		return;
-	assert(payload_size >= sizeof(POP3Request));
+	assert(payload_size >= sizeof(SMTPRequest));
 	auto request = ((SMTPRequest*)payload);
 	std::stringstream raw_request;
 	this->current_task = request->task;
@@ -92,26 +95,26 @@ void SMTPClient::request(const char* payload, int payload_size) {
 		std::string(request->payload, request->payload + request->payload_size) : "";
 
 	switch (request->task) {
-	case HELO:
+	case SMTPTasks::HELO:
 		raw_request << "HELO " << arg_data;
 		break;
-	case MAIL:
+	case SMTPTasks::MAIL:
 		raw_request << "MAIL FROM:<" << arg_data << ">";
 		break;
-	case RCPT:
+	case SMTPTasks::RCPT:
 		raw_request << "RCPT TO:<" << arg_data << ">";
 		break;
-	case DATA:
+	case SMTPTasks::DATA:
 		raw_request << "DATA";
 		break;
-	case DATA_RAW:
+	case SMTPTasks::DATA_RAW:
 		raw_request << arg_data << "\r\n.";
 		break;
-	case QUIT:
+	case SMTPTasks::QUIT:
 		raw_request << "QUIT";
 		break;
 	default:
-		this->current_task = NONE;
+		this->current_task = SMTPTasks::NONE;
 		this->onError(request->task, "Task not implemented");
 	}
 	raw_request << "\r\n";
@@ -121,5 +124,5 @@ void SMTPClient::request(const char* payload, int payload_size) {
 
 SMTPClient::SMTPClient(std::string address, int port) :
 	TCPClient(address, port) {
-	this->current_task = NONE;
+	this->current_task = SMTPTasks::NONE;
 }

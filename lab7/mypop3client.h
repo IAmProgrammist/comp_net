@@ -22,5 +22,5 @@ public:
 
 	void onQuit();
 
-	void onError(POP3Tasks failed_task, std::string response);
+	void onError(POP3Tasks::POP3Tasks failed_task, std::string response);
 };

@@ -3,21 +3,22 @@
 #include <webstur/ip/tcp/pop3client.h>
 #include <webstur/utils.h>
 
-std::map<POP3Tasks, bool> POP3Client::is_multi_line = {
-	{ LIST, true },
-	{ MAIL, true },
-	{ DEL, false },
-	{ INIT, false },
-	{ NONE, false },
-	{ LOGIN, false },
-	{ PASSWORD, false },
-	{ QUIT, false },
+
+std::map<POP3Tasks::POP3Tasks, bool> POP3Client::is_multi_line = {
+	{ POP3Tasks::LIST, true },
+	{ POP3Tasks::MAIL, true },
+	{ POP3Tasks::DEL, false },
+	{ POP3Tasks::INIT, false },
+	{ POP3Tasks::NONE, false },
+	{ POP3Tasks::LOGIN, false },
+	{ POP3Tasks::PASSWORD, false },
+	{ POP3Tasks::QUIT, false },
 };
 
 
 void POP3Client::onConnect() {
 	// Ожидаем, что первое полученное сообщение будет сообщение инициализации
-	this->current_task = INIT;
+	this->current_task = POP3Tasks::INIT;
 }
 
 void POP3Client::onDisconnect() {
@@ -56,7 +57,7 @@ std::string POP3Client::extractNextResponseFromBuffer() {
 void POP3Client::delegateResponse(const std::string& response) {
 	// Сбросить текущую задачу
 	auto old_task = this->current_task;
-	this->current_task = NONE;
+	this->current_task = POP3Tasks::NONE;
 
 	// Если ответ начинается с ошибки, то вызвать метод-обработчик ошибки
 	if (response.starts_with("-ERR")) {
@@ -65,7 +66,7 @@ void POP3Client::delegateResponse(const std::string& response) {
 	}
 	else {
 		switch (old_task) {
-		case LIST:
+		case POP3Tasks::LIST:
 		{
 			auto splitted_data = split(response, "\r\n");
 			std::vector<EMLHeader> headers;
@@ -80,7 +81,7 @@ void POP3Client::delegateResponse(const std::string& response) {
 			this->onMailList(headers);
 			break;
 		}
-		case MAIL:
+		case POP3Tasks::MAIL:
 		{
 			auto break_line_pos = response.find("\r\n");
 			EMLContent dat = {
@@ -89,19 +90,19 @@ void POP3Client::delegateResponse(const std::string& response) {
 			this->onMail(dat);
 			break;
 		}
-		case DEL:
+		case POP3Tasks::DEL:
 			this->onMailDelete();
 			break;
-		case INIT:
+		case POP3Tasks::INIT:
 			this->onInit();
 			break;
-		case LOGIN:
+		case POP3Tasks::LOGIN:
 			this->onLogin();
 			break;
-		case PASSWORD:
+		case POP3Tasks::PASSWORD:
 			this->onPassword();
 			break;
-		case QUIT:
+		case POP3Tasks::QUIT:
 			this->onQuit();
 			break;
 		default:
@@ -122,7 +123,7 @@ void POP3Client::onMessage(const std::vector<char>& message) {
 			return;
 
 		// Если текущая задача не задана, также выходим
-		if (this->current_task == NONE)
+		if (this->current_task == POP3Tasks::NONE)
 			continue;
 
 		this->delegateResponse(response);
@@ -130,7 +131,7 @@ void POP3Client::onMessage(const std::vector<char>& message) {
 }
 
 void POP3Client::request(const char* payload, int payload_size) {
-	if (this->current_task != NONE)
+	if (this->current_task != POP3Tasks::NONE)
 		return;
 	assert(payload_size >= sizeof(POP3Request));
 	auto request = ((POP3Request*) payload);
@@ -138,32 +139,32 @@ void POP3Client::request(const char* payload, int payload_size) {
 	this->current_task = request->task;
 
 	switch (request->task) {
-	case LIST:
+	case POP3Tasks::LIST:
 	{
 		raw_request << "LIST";
 		break;
 	}
-	case MAIL:
+	case POP3Tasks::MAIL:
 	{
 		raw_request << "RETR " << request->arguments.id;
 		break;
 	}
-	case DEL:
+	case POP3Tasks::DEL:
 		raw_request << "DELE " << request->arguments.id;
 		break;
-	case LOGIN:
+	case POP3Tasks::LOGIN:
 		raw_request << "USER " << std::string(request->arguments.login, 
 			request->arguments.login + strlen(request->arguments.login));
 		break;
-	case PASSWORD:
+	case POP3Tasks::PASSWORD:
 		raw_request << "PASS " << std::string(request->arguments.password,
 			request->arguments.password + strlen(request->arguments.password));;
 		break;
-	case QUIT:
+	case POP3Tasks::QUIT:
 		raw_request << "QUIT";
 		break;
 	default:
-		this->current_task = NONE;
+		this->current_task = POP3Tasks::NONE;
 		this->onError(request->task, "Task not implemented");
 	}
 	raw_request << "\r\n";
@@ -173,5 +174,5 @@ void POP3Client::request(const char* payload, int payload_size) {
 
 POP3Client::POP3Client(std::string address, int port) : 
 	TCPClient(address, port) {
-	this->current_task = NONE;
+	this->current_task = POP3Tasks::NONE;
 }

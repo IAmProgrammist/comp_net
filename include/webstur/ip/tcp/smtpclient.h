@@ -5,30 +5,32 @@
 #include <webstur/ip/tcp/tcpclient.h>
 #include <sstream>
 
-enum SMTPTasks
-{
-	NONE,
-	INIT,
-	HELO,
-	MAIL,
-	RCPT,
-	DATA,
-	DATA_RAW,
-	QUIT
-};
+namespace SMTPTasks {
+	enum SMTPTasks
+	{
+		NONE,
+		INIT,
+		HELO,
+		MAIL,
+		RCPT,
+		DATA,
+		DATA_RAW,
+		QUIT
+	};
+}
 
 struct SMTPRequest {
 	SMTPRequest() {};
 	~SMTPRequest() {};
 	
-	SMTPTasks task = NONE;
+	SMTPTasks::SMTPTasks task = SMTPTasks::NONE;
 	const char* payload = nullptr;
 	std::size_t payload_size = 0;
 };
 
 class DLLEXPORT SMTPClient : public TCPClient {
 private:
-	SMTPTasks current_task;
+	SMTPTasks::SMTPTasks current_task;
 	std::string buffer;
 
 	std::string extractNextResponseFromBuffer();
@@ -43,11 +45,11 @@ public:
 
 	void request(const char* payload, int payload_size);
 
-	virtual void onHelo() = 0;
+	virtual void onHello() = 0;
 
 	virtual void onMail() = 0;
 
-	virtual void onRcpt() = 0;
+	virtual void onRecipient() = 0;
 
 	virtual void onData() = 0;
 
@@ -57,5 +59,5 @@ public:
 
 	virtual	void onQuit() = 0;
 
-	virtual void onError(SMTPTasks failed_task, std::string response) = 0;
+	virtual void onError(SMTPTasks::SMTPTasks failed_task, std::string response) = 0;
 };

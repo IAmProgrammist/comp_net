@@ -1,3 +1,5 @@
+// POP3-клиент для консольного приложения
+
 #pragma once
 
 #include <webstur/ip/tcp/pop3client.h>

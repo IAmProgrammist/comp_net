@@ -32,7 +32,8 @@ int main() {
 				<< "Enter 2 to retrieve mail\n"
 				<< "Enter 3 to delete mail\n"
 				<< "Enter 4 to send mail\n"
-				<< "Enter 5 to exit program\n"
+				<< "Enter 5 to update POP3-server state\n"
+				<< "Enter 6 to exit program\n"
 				<< std::endl;
 
 			std::string input;
@@ -84,7 +85,8 @@ int main() {
 				POP3Request quit_request;
 				quit_request.task = POP3Tasks::QUIT;
 				client.request((const char*)&quit_request, sizeof(quit_request));
-
+			}
+			else if (input == "6") {
 				break;
 			}
 		}

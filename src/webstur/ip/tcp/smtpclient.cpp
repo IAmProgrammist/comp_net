@@ -91,24 +91,26 @@ void SMTPClient::request(const char* payload, int payload_size) {
 	auto request = ((SMTPRequest*)payload);
 	std::stringstream raw_request;
 	this->current_task = request->task;
-	std::string arg_data = request->payload ?
-		std::string(request->payload, request->payload + request->payload_size) : "";
 
 	switch (request->task) {
 	case SMTPTasks::HELO:
-		raw_request << "HELO " << arg_data;
+		raw_request << "HELO " << std::string(request->arguments.helo, 
+			request->arguments.helo + strlen(request->arguments.helo));
 		break;
 	case SMTPTasks::MAIL:
-		raw_request << "MAIL FROM:<" << arg_data << ">";
+		raw_request << "MAIL FROM:<" << std::string(request->arguments.from,
+			request->arguments.from + strlen(request->arguments.from)) << ">";
 		break;
 	case SMTPTasks::RCPT:
-		raw_request << "RCPT TO:<" << arg_data << ">";
+		raw_request << "RCPT TO:<" << std::string(request->arguments.to,
+			request->arguments.to + strlen(request->arguments.to)) << ">";
 		break;
 	case SMTPTasks::DATA:
 		raw_request << "DATA";
 		break;
 	case SMTPTasks::DATA_RAW:
-		raw_request << arg_data << "\r\n.";
+		raw_request << std::string(request->arguments.mail.body,
+			request->arguments.mail.body + request->arguments.mail.size) << "\r\n.";
 		break;
 	case SMTPTasks::QUIT:
 		raw_request << "QUIT";

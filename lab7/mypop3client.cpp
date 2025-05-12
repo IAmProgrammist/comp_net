@@ -68,6 +68,8 @@ void MyPOP3Client::onPassword() {
 
 void MyPOP3Client::onQuit() {
 	std::cout << LOG_PREFIX << "A client quitted, you can exit now" << std::endl;
+
+	// Выключить клиент
 	this->shutdown();
 }
 

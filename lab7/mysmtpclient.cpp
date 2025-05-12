@@ -26,8 +26,7 @@ void MySMTPClient::onHello() {
 	// Отправить запрос с отправителем
 	SMTPRequest request;
 	request.task = SMTPTasks::MAIL;
-	request.payload = this->login.c_str();
-	request.payload_size = this->login.size();
+	request.arguments.from = this->login.c_str();
 	this->request((const char*)&request, sizeof(request));
 }
 
@@ -37,8 +36,7 @@ void MySMTPClient::onMail() {
 	// Отправить запрос с отправителем
 	SMTPRequest request;
 	request.task = SMTPTasks::RCPT;
-	request.payload = this->receiver.c_str();
-	request.payload_size = this->receiver.size();
+	request.arguments.to = this->receiver.c_str();
 	this->request((const char*)&request, sizeof(request));
 }
 
@@ -48,8 +46,6 @@ void MySMTPClient::onRecipient() {
 	// Отправить запрос на отправку данных
 	SMTPRequest request;
 	request.task = SMTPTasks::DATA;
-	request.payload = nullptr;
-	request.payload_size = 0;
 	this->request((const char*)&request, sizeof(request));
 }
 
@@ -63,8 +59,8 @@ void MySMTPClient::onData() {
 	// Отправить запрос на отправку данных
 	SMTPRequest request;
 	request.task = SMTPTasks::DATA_RAW;
-	request.payload = &data_raw[0];
-	request.payload_size = data_raw.size();
+	request.arguments.mail.body = &data_raw[0];
+	request.arguments.mail.size = data_raw.size();
 	this->request((const char*)&request, sizeof(request));
 }
 
@@ -74,8 +70,6 @@ void MySMTPClient::onDataRaw() {
 	// Отправить запрос на отправку данных
 	SMTPRequest request;
 	request.task = SMTPTasks::QUIT;
-	request.payload = nullptr;
-	request.payload_size = 0;
 	this->request((const char*)&request, sizeof(request));
 }
 
@@ -93,8 +87,7 @@ void MySMTPClient::onInit() {
 	// Отправить HELLO-запрос
 	SMTPRequest request;
 	request.task = SMTPTasks::HELO;
-	request.payload = deviceName;
-	request.payload_size = deviceNameSize;
+	request.arguments.helo = deviceName;
 	this->request((const char*)&request, sizeof(request));
 }
 

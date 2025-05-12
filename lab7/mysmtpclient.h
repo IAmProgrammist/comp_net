@@ -1,3 +1,5 @@
+// SMTP-клиент для консольного приложения
+
 #pragma once
 
 #include <istream>

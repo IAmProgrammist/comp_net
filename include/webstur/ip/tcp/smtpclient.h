@@ -1,3 +1,5 @@
+// Содержит базовые классы для создания SMTP-клиента
+
 #pragma once
 
 #include <queue>
@@ -6,26 +8,55 @@
 #include <sstream>
 
 namespace SMTPTasks {
+	// Структура, описывающая типы задач, выполняемые SMTP-клиентом
 	enum SMTPTasks
 	{
+		// У клиента нет задачи, все входящие сообщения будут проигнорированы
 		NONE,
+		// Первое сообщение от сервера, подтверждающее успешное соединение
 		INIT,
+		// Отправка информации о комьютере
 		HELO,
+		// Отправка информации об отправителе
 		MAIL,
+		// Отправка информации о получателе
 		RCPT,
+		// Отправка запроса на приём почты
 		DATA,
+		// Отправка тела письма
 		DATA_RAW,
+		// Выход из SMTP-сессии
 		QUIT
 	};
 }
 
+// Описывает задачу к выполнению и её аргументы
 struct SMTPRequest {
 	SMTPRequest() {};
 	~SMTPRequest() {};
 	
 	SMTPTasks::SMTPTasks task = SMTPTasks::NONE;
-	const char* payload = nullptr;
-	std::size_t payload_size = 0;
+	union Arguments {
+		Arguments() {};
+		~Arguments() {};
+
+		// Имя компьютера, используется в задаче INIT
+		const char* helo;
+		// Отправитель, используется в задаче MAIL
+		const char* from;
+		// Отправитель, используется в задаче RCPT
+		const char* to;
+		// Письмо, используется в задаче DATA_RAW
+		struct MailContents {
+			MailContents() {};
+			~MailContents() {};
+
+			// Тело письма
+			const char* body;
+			// Размер письма
+			std::size_t size;
+		} mail;
+	} arguments;
 };
 
 class DLLEXPORT SMTPClient : public TCPClient {

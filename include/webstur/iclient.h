@@ -15,7 +15,7 @@ public:
 	// Запрашивает данные с сервера
 	virtual void request();
 	// Запрашивает данные с сервера с дополнительной отправкой данных
-	virtual void request(char* payload, int payload_size) = 0;
+	virtual void request(const char* payload, int payload_size) = 0;
 	// Отобразить информацию о клиенте
 	virtual std::ostream& printClientInfo(std::ostream& out) = 0;
 

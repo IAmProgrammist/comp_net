@@ -35,7 +35,7 @@ public:
 	// Запрашивает данные с сервера
 	void request();
 	// Запрашивает данные с сервера с дополнительной отправкой данных
-	void request(char* payload, int payload_size);
+	void request(const char* payload, int payload_size);
 	// Отобразить информацию о клиенте
 	std::ostream& printClientInfo(std::ostream& out);
 	

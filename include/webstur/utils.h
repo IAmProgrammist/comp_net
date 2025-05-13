@@ -35,3 +35,5 @@ FUNC_DLLEXPORT void unloadWSA();
 FUNC_DLLEXPORT std::string getUniqueFilepath();
 // Сохраняет массив байтов в файл
 FUNC_DLLEXPORT void saveByteArray(const std::vector<char>& data, std::string path);
+// Разбивает строку на массив строк по разделителю
+FUNC_DLLEXPORT std::vector<std::string> split(std::string s, std::string delimiter);

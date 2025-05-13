@@ -93,6 +93,12 @@
     <ClInclude Include="..\..\include\webstur\dhcp.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\include\webstur\ip\tcp\pop3client.h">
+      <Filter>Header Files\ip\tcp</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\webstur\ip\tcp\smtpclient.h">
+      <Filter>Header Files\ip\tcp</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="dllmain.cpp">
@@ -139,6 +145,12 @@
     </ClCompile>
     <ClCompile Include="dhcp.cpp">
       <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="ip\tcp\pop3client.cpp">
+      <Filter>Source Files\ip\tcp</Filter>
+    </ClCompile>
+    <ClCompile Include="ip\tcp\smtpclient.cpp">
+      <Filter>Source Files\ip\tcp</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

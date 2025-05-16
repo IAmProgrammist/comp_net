@@ -167,6 +167,10 @@
     <ClInclude Include="..\..\include\webstur\iclient.h" />
     <ClInclude Include="..\..\include\webstur\ip\arp.h" />
     <ClInclude Include="..\..\include\webstur\ip\dhcp.h" />
+    <ClInclude Include="..\..\include\webstur\ip\tcp\http\httpmethod.h" />
+    <ClInclude Include="..\..\include\webstur\ip\tcp\http\httprequest.h" />
+    <ClInclude Include="..\..\include\webstur\ip\tcp\http\httpresponse.h" />
+    <ClInclude Include="..\..\include\webstur\ip\tcp\http\httpserver.h" />
     <ClInclude Include="..\..\include\webstur\ip\tcp\pop3client.h" />
     <ClInclude Include="..\..\include\webstur\ip\tcp\smtpclient.h" />
     <ClInclude Include="..\..\include\webstur\ip\tcp\tcpclient.h" />
@@ -184,6 +188,10 @@
     <ClCompile Include="iclient.cpp" />
     <ClCompile Include="ip\arp.cpp" />
     <ClCompile Include="ip\dhcp.cpp" />
+    <ClCompile Include="ip\tcp\http\httpendpoint.cpp" />
+    <ClCompile Include="ip\tcp\http\httprequest.cpp" />
+    <ClCompile Include="ip\tcp\http\httpresponse.cpp" />
+    <ClCompile Include="ip\tcp\http\httpserver.cpp" />
     <ClCompile Include="ip\tcp\pop3client.cpp" />
     <ClCompile Include="ip\tcp\smtpclient.cpp" />
     <ClCompile Include="ip\tcp\tcpclient.cpp" />
@@ -198,6 +206,9 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="utils.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="..\..\include\webstur\ip\tcp\http\httpendpoint.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

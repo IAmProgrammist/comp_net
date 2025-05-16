@@ -31,6 +31,12 @@
     <Filter Include="Header Files\ip\udp">
       <UniqueIdentifier>{e4b66ecd-09e5-41f3-9c9c-9a09bcb8f4e2}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\ip\tcp\http">
+      <UniqueIdentifier>{2f54f62e-124f-4666-953c-2746bd84d788}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\ip\tcp\http">
+      <UniqueIdentifier>{58baa9d2-b234-499c-8b47-55c2bafc3660}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\include\webstur\iclient.h">
@@ -75,6 +81,18 @@
     <ClInclude Include="..\..\include\webstur\ip\arp.h">
       <Filter>Header Files\ip</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\include\webstur\ip\tcp\http\httpserver.h">
+      <Filter>Header Files\ip\tcp\http</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\webstur\ip\tcp\http\httprequest.h">
+      <Filter>Header Files\ip\tcp\http</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\webstur\ip\tcp\http\httpresponse.h">
+      <Filter>Header Files\ip\tcp\http</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\webstur\ip\tcp\http\httpmethod.h">
+      <Filter>Header Files\ip\tcp\http</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="dllmain.cpp">
@@ -116,5 +134,22 @@
     <ClCompile Include="ip\dhcp.cpp">
       <Filter>Source Files\ip</Filter>
     </ClCompile>
+    <ClCompile Include="ip\tcp\http\httpendpoint.cpp">
+      <Filter>Source Files\ip\tcp\http</Filter>
+    </ClCompile>
+    <ClCompile Include="ip\tcp\http\httprequest.cpp">
+      <Filter>Source Files\ip\tcp\http</Filter>
+    </ClCompile>
+    <ClCompile Include="ip\tcp\http\httpresponse.cpp">
+      <Filter>Source Files\ip\tcp\http</Filter>
+    </ClCompile>
+    <ClCompile Include="ip\tcp\http\httpserver.cpp">
+      <Filter>Source Files\ip\tcp\http</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="..\..\include\webstur\ip\tcp\http\httpendpoint.h">
+      <Filter>Header Files\ip\tcp\http</Filter>
+    </Text>
   </ItemGroup>
 </Project>

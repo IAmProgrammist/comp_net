@@ -9,11 +9,14 @@ old protocol IPX/SPX and not using webstur
 
 webstur - is a net library targetted for Windows platforms 
 which includes classes to create:
-* UDP client
-* UDP server
-* TCP client
-* TCP server
-* Many more coming! (ARP table editor, SMTP, POP3, DHCP info getter, HTTP client-server)
+* UDP client with examples
+* UDP server with examples
+* TCP client with examples
+* TCP server with examples
+* ARP Table viewer/editor
+* DHCP/DNS utility
+* SMTP and POP3 client with example
+* HTTP client and server is coming!
 
 webstur library headers are placed in ./include folder
 

@@ -164,14 +164,10 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\include\webstur\arp.h" />
-    <ClInclude Include="..\..\include\webstur\dhcp.h" />
     <ClInclude Include="..\..\include\webstur\iclient.h" />
-    <ClInclude Include="..\..\include\webstur\ip\tcp\file\filetcpclient.h" />
-    <ClInclude Include="..\..\include\webstur\ip\tcp\file\filetcpserver.h" />
+    <ClInclude Include="..\..\include\webstur\ip\arp.h" />
+    <ClInclude Include="..\..\include\webstur\ip\dhcp.h" />
     <ClInclude Include="..\..\include\webstur\ip\tcp\pop3client.h" />
-    <ClInclude Include="..\..\include\webstur\ip\tcp\simple\simpletcpclient.h" />
-    <ClInclude Include="..\..\include\webstur\ip\tcp\simple\simpletcpserver.h" />
     <ClInclude Include="..\..\include\webstur\ip\tcp\smtpclient.h" />
     <ClInclude Include="..\..\include\webstur\ip\tcp\tcpclient.h" />
     <ClInclude Include="..\..\include\webstur\ip\tcp\tcpserver.h" />
@@ -184,15 +180,11 @@
     <ClInclude Include="pch.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="arp.cpp" />
-    <ClCompile Include="dhcp.cpp" />
     <ClCompile Include="dllmain.cpp" />
     <ClCompile Include="iclient.cpp" />
-    <ClCompile Include="ip\tcp\file\filetcpclient.cpp" />
-    <ClCompile Include="ip\tcp\file\filetcpserver.cpp" />
+    <ClCompile Include="ip\arp.cpp" />
+    <ClCompile Include="ip\dhcp.cpp" />
     <ClCompile Include="ip\tcp\pop3client.cpp" />
-    <ClCompile Include="ip\tcp\simple\simpletcpclient.cpp" />
-    <ClCompile Include="ip\tcp\simple\simpletcpserver.cpp" />
     <ClCompile Include="ip\tcp\smtpclient.cpp" />
     <ClCompile Include="ip\tcp\tcpclient.cpp" />
     <ClCompile Include="ip\tcp\tcpserver.cpp" />

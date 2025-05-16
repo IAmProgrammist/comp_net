@@ -1,6 +1,5 @@
-#include "pch.h"
 #include <iostream>
-#include <webstur/ip/tcp/file/filetcpclient.h>
+#include "filetcpclient.h"
 
 FileTCPClient::FileTCPClient(std::string address, int port, std::string save_path): 
 	TCPClient(address, port), save_path(save_path) {

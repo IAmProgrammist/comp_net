@@ -1,8 +1,7 @@
-#include "pch.h"
 #include <iostream>
 #include <fstream>
 #include <filesystem>
-#include <webstur/ip/tcp/file/filetcpserver.h>
+#include "filetcpserver.h"
 
 void FileTCPServer::onMessage(SOCKET client, const std::vector<char>& message) {
 	std::string file_path = std::string(message.begin(), message.end());

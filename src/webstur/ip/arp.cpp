@@ -6,7 +6,7 @@
 #include <iostream>
 #include <iomanip>
 #include <sstream>
-#include <webstur/arp.h>
+#include <webstur/ip/arp.h>
 
 std::string ARPHelper::prettyPrintPhysicalAddress(unsigned char* addr, int addr_size) {
     std::ostringstream result;

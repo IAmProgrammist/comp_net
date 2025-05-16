@@ -2,7 +2,7 @@
 #include <webstur/utils.h>
 #include <webstur/ip/tcp/tcpclient.h>
 
-class DLLEXPORT FileTCPClient : public TCPClient {
+class FileTCPClient : public TCPClient {
 	std::ofstream save_file;
 	std::string save_path;
 public:

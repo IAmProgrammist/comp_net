@@ -3,7 +3,7 @@
 #include <dhcpcsdk.h>
 #include <iphlpapi.h>
 #include <ws2tcpip.h>
-#include <webstur/dhcp.h>
+#include <webstur/ip/dhcp.h>
 
 void DHCPHelper::init() {
     std::clog << "Loading WSA library" << std::endl;

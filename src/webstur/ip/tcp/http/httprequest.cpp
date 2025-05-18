@@ -4,24 +4,24 @@
 
 HTTPRequest::HTTPRequest() {}
 
-std::optional<HTTPRequest> HTTPRequest::parse(const std::string& message, const std::string& pattern, HTTPMethod method) {
-
-}
-
-std::optional<HTTPRequest> HTTPRequest::parse(const std::string& message) {
+HTTPRequest HTTPRequest::parse(const std::string& message) {
 	HTTPRequest result;
 	
 	bool first_line_to_be_extracted = true;
-	// Начало строчки
+	// РќР°С‡Р°Р»Рѕ СЃС‚СЂРѕС‡РєРё
 	size_t previous_break_line_pos = 0;
-	// Конец строчки
+	// РљРѕРЅРµС† СЃС‚СЂРѕС‡РєРё
 	auto break_line_pos = message.find("\r\n");
 
-	// Получить метод и запрос
+	// РџРѕР»СѓС‡РёС‚СЊ РјРµС‚РѕРґ Рё Р·Р°РїСЂРѕСЃ
 	{
-		auto slice = std::string_view{ message.c_str(), break_line_pos - previous_break_line_pos };
-		auto space_index = slice.find(" ");
-		auto method_name = slice.substr(0, space_index);
+		auto splitted = split(message.substr(0, break_line_pos), " ");
+		if (splitted.size() < 2) {
+			result.is_valid = false;
+			return result;
+		}
+		
+		auto method_name = splitted[0];
 		if (method_name == "GET")
 			result.method = HTTPMethod::GET;
 		else if (method_name == "HEAD")
@@ -32,32 +32,64 @@ std::optional<HTTPRequest> HTTPRequest::parse(const std::string& message) {
 			result.method = HTTPMethod::PATCH;
 		else if (method_name == "DELETE")
 			result.method = HTTPMethod::DEL;
-		else
-			return std::nullopt;
+		else {
+			result.is_valid = false;
+			return result;
+		}
 
-		result.query = slice.substr(space_index + 1);
+		result.query = splitted[1];
 	}
 	
-	// Считываем заголовки, до первого \r\n
-	while (break_line_pos - previous_break_line_pos > 2 ) {
+	auto message_size = message.size();
+
+	// РЎС‡РёС‚С‹РІР°РµРј Р·Р°РіРѕР»РѕРІРєРё, РґРѕ РїРµСЂРІРѕРіРѕ \r\n\r\n
+	while (true) {
 		if (break_line_pos == std::string::npos) {
-			break;
+			result.is_valid = false;
+			return result;
 		}
 		previous_break_line_pos = break_line_pos + 2;
-		break_line_pos = message.find("\r\n", previous_break_line_pos + 2);
+		break_line_pos = message.find("\r\n", previous_break_line_pos);
 
-		auto slice = std::string_view(message.c_str(), break_line_pos - previous_break_line_pos);
+		if (break_line_pos - previous_break_line_pos <= 2) {
+			break;
+		}
+
+		auto slice = std::string_view(message.c_str() + previous_break_line_pos, 
+			custom_min(break_line_pos, message_size) - previous_break_line_pos);
 		auto space_index = slice.find(": ");
+		auto header_name = slice.substr(0, space_index);
+		auto header_val = slice.substr(space_index + 2);
+		result.headers.insert(std::pair{ header_name, header_val });
 	}
 
-	// TODO: добавить считывание тела запроса
+	result.body = message.substr(break_line_pos + 2);
+	result.is_valid = true;
+
+	return result;
+
+	// TODO: РґРѕР±Р°РІРёС‚СЊ СЃС‡РёС‚С‹РІР°РЅРёРµ С‚РµР»Р° Р·Р°РїСЂРѕСЃР°
 }
 
-bool HTTPRequest::matches_path(const std::string& message, const std::string& pattern) {
-
+bool HTTPRequest::matchesPath(const std::string& pattern) const {
+	// TODO: СЃРґРµР»Р°С‚СЊ РїСЂРѕРґРІРёРЅСѓС‚С‹Р№ СЂР°СЃРїРѕР·РЅР°РІР°С‚РµР»СЊ РїРѕ РїР°С‚С‚РµСЂРЅСѓ, РїРѕРґРґРµСЂР¶РёРІР°СЋС‰РёР№
+	// PATH-РїРµСЂРµРјРµРЅРЅС‹Рµ
+	
+	return this->query.starts_with(pattern);
 }
 
-// Возвращает заголовки запроса
-const std::map<std::string, std::string>& HTTPRequest::get_headers() {
+const std::map<std::string, std::string>& HTTPRequest::getHeaders() const {
 	return this->headers;
+}
+
+bool HTTPRequest::isValid() {
+	return this->is_valid;
+}
+
+const std::string& HTTPRequest::getBody() const {
+	return this->body;
+}
+
+HTTPMethod HTTPRequest::getMethod() const {
+	return this->method;
 }

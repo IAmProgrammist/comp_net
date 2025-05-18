@@ -1,4 +1,4 @@
-// Простой HTTP-сервер
+// РџСЂРѕСЃС‚РѕР№ HTTP-СЃРµСЂРІРµСЂ
 
 #pragma once
 
@@ -11,18 +11,26 @@
 
 class DLLEXPORT HTTPServer : public TCPServer {
 private:
-	std::vector<HTTPEndpoint> endpoints;
+	std::vector<HTTPEndpoint*> endpoints;
+	// Р‘СѓС„РµСЂ РЅР°РєРѕРїР»РµРЅРёСЏ РѕС‚РІРµС‚РѕРІ СЃ СЃРµСЂРІРµСЂР°
+	std::map<SOCKET, std::string> buffers;
+	std::map<SOCKET, std::size_t> content_lengths;
+	std::map<SOCKET, std::size_t> header_end_poses;
 public:
 	HTTPServer(int port = HTTP_DEFAULT_SERVER_PORT);
 
-	// Включает в список эндпоинтов новый эндпоинт
-	void injectEndpoint(const HTTPEndpoint& endpoint);
-	// Метод, вызываемый при установлении соединения с клиентом
+	// Р’РєР»СЋС‡Р°РµС‚ РІ СЃРїРёСЃРѕРє СЌРЅРґРїРѕРёРЅС‚РѕРІ РЅРѕРІС‹Р№ СЌРЅРґРїРѕРёРЅС‚
+	void injectEndpoint(HTTPEndpoint& endpoint);
+	// РњРµС‚РѕРґ, РІС‹Р·С‹РІР°РµРјС‹Р№ РїСЂРё СѓСЃС‚Р°РЅРѕРІР»РµРЅРёРё СЃРѕРµРґРёРЅРµРЅРёСЏ СЃ РєР»РёРµРЅС‚РѕРј
 	void onConnect(SOCKET client);
-	// Метод, вызываемый при разрыве соединения с клиентом
-	// Переданный сокет уже не является действительным, 
-	// однако передаётся для отладочной информации
+	// РњРµС‚РѕРґ, РІС‹Р·С‹РІР°РµРјС‹Р№ РїСЂРё СЂР°Р·СЂС‹РІРµ СЃРѕРµРґРёРЅРµРЅРёСЏ СЃ РєР»РёРµРЅС‚РѕРј
+	// РџРµСЂРµРґР°РЅРЅС‹Р№ СЃРѕРєРµС‚ СѓР¶Рµ РЅРµ СЏРІР»СЏРµС‚СЃСЏ РґРµР№СЃС‚РІРёС‚РµР»СЊРЅС‹Рј, 
+	// РѕРґРЅР°РєРѕ РїРµСЂРµРґР°С‘С‚СЃСЏ РґР»СЏ РѕС‚Р»Р°РґРѕС‡РЅРѕР№ РёРЅС„РѕСЂРјР°С†РёРё
 	void onDisconnect(SOCKET client);
-	// Метод, вызываемый при разрыве общения с клиентом
+	// РњРµС‚РѕРґ, РІС‹Р·С‹РІР°РµРјС‹Р№ РїСЂРё СЂР°Р·СЂС‹РІРµ РѕР±С‰РµРЅРёСЏ СЃ РєР»РёРµРЅС‚РѕРј
 	void onMessage(SOCKET client, const std::vector<char>& message);
+	// РњРµС‚РѕРґ, РІС‹Р·С‹РІР°РµРјС‹Р№ РїСЂРё РїРѕР»СѓС‡РµРЅРёРё РІР°Р»РёРґРЅРѕРіРѕ Р·Р°РїСЂРѕСЃР°
+	void onRequest(SOCKET client, HTTPRequest& request);
+	// РњРµС‚РѕРґ, РѕС‚РїСЂР°РІР»СЏСЋС‰РёР№ СЃРѕРѕР±С‰РµРЅРёРµ Рё СЂР°Р·СЂС‹РІР°СЋС‰РёР№ СЃРѕРµРґРёРЅРµРЅРёРµ
+	void sendMessageAndDisconnect(SOCKET client, const HTTPResponse& response);
 };

@@ -1,29 +1,36 @@
 #pragma once
-
-#include <optional>
 #include <map>
 #include <webstur/utils.h>
 #include <webstur/ip/tcp/http/httpmethod.h>
 
+#define custom_min(a,b)            (((a) < (b)) ? (a) : (b))
+#define custom_max(a,b)            (((a) > (b)) ? (a) : (b))
+
 class DLLEXPORT HTTPRequest {
 public:
-	// Возвращает HTTPRequest, если получается распарсить заголовок 
-	// запроса а также запрос соответствует паттерну и методу, иначе - ничего.
-	static std::optional<HTTPRequest> parse(const std::string &message, const std::string& pattern, HTTPMethod method);
+	bool isValid();
 
-	// Возвращает HTTPRequest, если получается распарсить заголовок
-	// запроса, иначе - ничего.
-	static std::optional<HTTPRequest> parse(const std::string& message);
+	// Р’РѕР·РІСЂР°С‰Р°РµС‚ HTTPRequest, РµСЃР»Рё РїРѕР»СѓС‡Р°РµС‚СЃСЏ СЂР°СЃРїР°СЂСЃРёС‚СЊ Р·Р°РіРѕР»РѕРІРѕРє
+	// Р·Р°РїСЂРѕСЃР°, РёРЅР°С‡Рµ - РЅРёС‡РµРіРѕ.
+	static HTTPRequest parse(const std::string& message);
 
-	// Возвращает true, если путь в сообщении совпадает с паттерном
-	static bool matches_path(const std::string& message, const std::string& pattern);
+	// Р’РѕР·РІСЂР°С‰Р°РµС‚ true, РµСЃР»Рё РїСѓС‚СЊ РІ СЃРѕРѕР±С‰РµРЅРёРё СЃРѕРІРїР°РґР°РµС‚ СЃ РїР°С‚С‚РµСЂРЅРѕРј
+	bool matchesPath(const std::string& pattern) const;
 
-	// Возвращает заголовки запроса
-	const std::map<std::string, std::string>& get_headers();
+	// Р’РѕР·РІСЂР°С‰Р°РµС‚ Р·Р°РіРѕР»РѕРІРєРё Р·Р°РїСЂРѕСЃР°
+	const std::map<std::string, std::string>& getHeaders() const;
+
+	// Р’РѕР·РІСЂР°С‰Р°РµС‚ С‚РµР»Рѕ Р·Р°РїСЂРѕСЃР°
+	const std::string& getBody() const;
+
+	// Р’РѕР·РІСЂР°С‰Р°РµС‚ РјРµС‚РѕРґ
+	HTTPMethod getMethod() const;
 private:
+	bool is_valid = true;
 	HTTPMethod method;
 	std::string query;
 	std::map<std::string, std::string> headers;
+	std::string body;
 
 	HTTPRequest();
 };

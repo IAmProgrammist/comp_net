@@ -1,7 +1,5 @@
 #pragma once
 
-#include <optional>
-
 #include <webstur/utils.h>
 #include <webstur/ip/tcp/http/httprequest.h>
 #include <webstur/ip/tcp/http/httpresponse.h>
@@ -12,13 +10,12 @@ private:
 	HTTPMethod method;
 	std::string path;
 public:
-	// Пытается распарсить HTTP заголовок, проверяет его на
-	// указанный паттерн и, если всё хорошо, вызывает эндпоинт, 
-	// возвращает HTTPResponse. Иначе - возвращает ничего.
-	std::optional<HTTPResponse> parse_and_process(const std::string& message);
+	bool matches(const HTTPRequest& message);
 
-	bool matches(const std::string& message);
+	HTTPEndpoint(HTTPEndpoint& endpoint);
+
+	// РњРµС‚РѕРґ РґР»СЏ РѕР±СЂР°Р±РѕС‚РєРё Р·Р°РїСЂРѕСЃР°. Р’РѕР·РІСЂР°С‰Р°РµРјС‹Р№ РѕС‚РІРµС‚ РґРѕР»Р¶РµРЅ Р±С‹С‚СЊ
+	// РІ heap (РёСЃРїРѕР»СЊР·СѓР№С‚Рµ new)
+	virtual HTTPResponse* process(const HTTPRequest& request) = 0;
 protected:
-	// Метод для обработки запроса
-	virtual HTTPResponse process(const HTTPRequest& request) = 0;
 };

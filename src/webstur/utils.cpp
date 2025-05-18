@@ -5,6 +5,7 @@
 #include <random>
 #include <fstream>
 #include <string>
+#include <urlmon.h>
 #include <webstur/utils.h>
 
 namespace uuid {
@@ -145,4 +146,20 @@ std::vector<std::string> split(std::string s, std::string delimiter) {
 
 	res.push_back(s.substr(pos_start));
 	return res;
+}
+
+std::string mimeTypeFromString(const std::string& str) {
+	LPWSTR pwzMimeOut = NULL;
+	HRESULT hr = FindMimeFromData(NULL, std::wstring(str.begin(), str.end()).c_str(), NULL, 0,
+		NULL, FMFD_URLASFILENAME, &pwzMimeOut, 0x0);
+	if (SUCCEEDED(hr)) {
+		std::wstring strResult(pwzMimeOut);
+		// Despite the documentation stating to call operator delete, the
+		// returned string must be cleaned up using CoTaskMemFree
+		CoTaskMemFree(pwzMimeOut);
+		return std::string(strResult.begin(), strResult.end());
+	}
+
+	return "";
+
 }

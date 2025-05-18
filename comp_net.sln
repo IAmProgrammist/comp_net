@@ -63,6 +63,9 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Lab 8", "Lab 8", "{CC7036B8-A1D6-4119-8D26-03406EF510E6}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "HTTP", "lab8\HTTP.vcxproj", "{C2BBAA62-6F48-4AB8-949E-1B341158F07B}"
+	ProjectSection(ProjectDependencies) = postProject
+		{133261F7-BAC1-47E4-B8DA-D4EBB67350C6} = {133261F7-BAC1-47E4-B8DA-D4EBB67350C6}
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

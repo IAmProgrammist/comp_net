@@ -28,7 +28,7 @@ std::stringstream HTTPResponse::serialize() const {
     for (auto& header : this->headers) {
         output << header.first << ": " << header.second << "\r\n";
     }
-    output << "\r\n\r\n";
+    output << "\r\n";
     return output;
 }
 
@@ -37,20 +37,24 @@ HTTPResponse::~HTTPResponse() {
 }
 
 HTTPFileResponse::HTTPFileResponse(int code, std::string file_path) : HTTPResponse(code), file_path(file_path) {
-    this->headers.insert({ "Content-Type", mimeTypeFromString(file_path) });
-    this->headers.insert({ "Content-Length", 
-        std::to_string(std::filesystem::file_size({file_path})) });
+    std::ifstream in(this->file_path);
+    if (in.is_open()) {
+        this->contents = std::string((std::istreambuf_iterator<char>(in)),
+            std::istreambuf_iterator<char>());
+        in.close();
+        this->headers.insert({ "Content-Length",
+            std::to_string(this->contents.size()) });
+        this->headers.insert({ "Content-Type", mimeTypeFromString(file_path) });
+    }
+    else {
+        this->code = 404;
+    }
+    in.close();
 }
 
 std::stringstream HTTPFileResponse::serialize() const {
     auto response = HTTPResponse::serialize();
-
-    std::ifstream in(this->file_path);
-    if (!in.is_open()) return response;
-
-    std::string str((std::istreambuf_iterator<char>(in)),
-        std::istreambuf_iterator<char>());
-    response << str;
+    response << this->contents;
 
     return response;
 }

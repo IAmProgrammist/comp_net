@@ -11,3 +11,5 @@ HTTPEndpoint::HTTPEndpoint(HTTPEndpoint& endpoint) {
 	this->path = endpoint.path;
 	this->method = endpoint.method;
 }
+
+HTTPEndpoint::HTTPEndpoint(std::string path, HTTPMethod method) : path(path), method(method) {};

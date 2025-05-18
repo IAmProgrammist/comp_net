@@ -14,6 +14,8 @@ public:
 
 	HTTPEndpoint(HTTPEndpoint& endpoint);
 
+	HTTPEndpoint(std::string path, HTTPMethod method);
+
 	// Метод для обработки запроса. Возвращаемый ответ должен быть
 	// в heap (используйте new)
 	virtual HTTPResponse* process(const HTTPRequest& request) = 0;

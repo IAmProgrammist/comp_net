@@ -11,7 +11,7 @@
 class DLLEXPORT HTTPResponse {
 public:
 	std::map<std::string, std::string> headers;
-	const int code;
+	int code;
 
 	HTTPResponse(int code);
 	virtual ~HTTPResponse();
@@ -22,6 +22,7 @@ public:
 class DLLEXPORT HTTPFileResponse : public HTTPResponse {
 public:
 	std::string file_path;
+	std::string contents;
 
 	HTTPFileResponse(int code, std::string file_path);
 	virtual ~HTTPFileResponse();

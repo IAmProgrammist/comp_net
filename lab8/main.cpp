@@ -2,12 +2,16 @@
 #include <algorithm>
 #include <ws2tcpip.h>
 #include <webstur/ip/tcp/http/httpserver.h>
+#include "endpoints/cardendpoint.h"
 
 int main() {
 	try {
 		IServer::init();
 
-		auto server = HTTPServer(8081);
+		CardEndpoint endpoint;
+
+		auto server = HTTPServer();
+		server.injectEndpoint(endpoint);
 		server.start();
 
 		while (1) {}

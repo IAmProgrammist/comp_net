@@ -1,10 +1,10 @@
 #include "cardendpoint.h"
 
-// Сконструировать эндпоинт по пути /my-card
+// РЎРєРѕРЅСЃС‚СЂСѓРёСЂРѕРІР°С‚СЊ СЌРЅРґРїРѕРёРЅС‚ РїРѕ РїСѓС‚Рё /my-card
 CardEndpoint::CardEndpoint() : HTTPEndpoint("/my-card", GET) {};
 
 HTTPResponse* CardEndpoint::process(const HTTPRequest& request) {
-	// Выдать файл-визитку
+	// Р’С‹РґР°С‚СЊ С„Р°Р№Р»-РІРёР·РёС‚РєСѓ
 	HTTPResponse* answer = new HTTPFileResponse(200, ".\\assets\\index.html");
 
 	return answer;

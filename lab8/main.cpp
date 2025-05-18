@@ -6,15 +6,20 @@
 
 int main() {
 	try {
+		// Загрузить библиотеки WSA
 		IServer::init();
 
+		// Инициализировать сервер и эндпоинты
 		CardEndpoint endpoint;
-
 		auto server = HTTPServer();
 		server.injectEndpoint(endpoint);
+		
+		// Запустить сервер
 		server.start();
 
-		while (1) {}
+		std::cout << "A server is running now. To exit server gracefully press ENTER key" << std::endl;
+		// При любом вводе пользователя приостановить выполнение программы
+		std::cin.ignore();
 	}
 	catch (const std::runtime_error& error) {
 		std::cerr << "Failed while running server. Caused by: '" << error.what() << "'" << std::endl;

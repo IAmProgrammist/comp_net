@@ -15,12 +15,16 @@ HTTPRequest HTTPRequest::parse(const std::string& message) {
 
 	// Получить метод и запрос
 	{
+		// Разбить первую строчку
 		auto splitted = split(message.substr(0, break_line_pos), " ");
+		
+		// В первой строчке должны быть как минимум два признака: метод и путь к методу
 		if (splitted.size() < 2) {
 			result.is_valid = false;
 			return result;
 		}
 		
+		// Сохраним имя метода и запрос
 		auto method_name = splitted[0];
 		if (method_name == "GET")
 			result.method = HTTPMethod::GET;
@@ -63,18 +67,18 @@ HTTPRequest HTTPRequest::parse(const std::string& message) {
 		result.headers.insert(std::pair{ header_name, header_val });
 	}
 
+	// Остальное сохраняем в body
 	result.body = message.substr(break_line_pos + 2);
 	result.is_valid = true;
 
 	return result;
-
-	// TODO: добавить считывание тела запроса
 }
 
 bool HTTPRequest::matchesPath(const std::string& pattern) const {
 	// TODO: сделать продвинутый распознаватель по паттерну, поддерживающий
 	// PATH-переменные
 	
+	// Запрос должен начинаться с паттерна
 	return this->query.starts_with(pattern);
 }
 

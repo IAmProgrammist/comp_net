@@ -8,10 +8,10 @@
 
 class DLLEXPORT HTTPRequest {
 public:
+	// Возвращает true, если запрос удалось корректно распознать
 	bool isValid();
 
-	// Возвращает HTTPRequest, если получается распарсить заголовок
-	// запроса, иначе - ничего.
+	// Конструирует HTTPRequest на основе полученного сообщения
 	static HTTPRequest parse(const std::string& message);
 
 	// Возвращает true, если путь в сообщении совпадает с паттерном

@@ -27,5 +27,6 @@ public:
 	HTTPFileResponse(int code, std::string file_path);
 	virtual ~HTTPFileResponse();
 
+	// Возвращает стрим для ответа
 	std::stringstream serialize()  const;
 };

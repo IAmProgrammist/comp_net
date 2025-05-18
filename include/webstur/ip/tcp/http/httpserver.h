@@ -29,7 +29,8 @@ public:
 	void onDisconnect(SOCKET client);
 	// Метод, вызываемый при разрыве общения с клиентом
 	void onMessage(SOCKET client, const std::vector<char>& message);
-	// Метод, вызываемый при получении валидного запроса
+	// Метод, вызываемый при получении валидного запроса. 
+	// выполняет роутинг запроса в нужный эндпоинт
 	void onRequest(SOCKET client, HTTPRequest& request);
 	// Метод, отправляющий сообщение и разрывающий соединение
 	void sendMessageAndDisconnect(SOCKET client, const HTTPResponse& response);

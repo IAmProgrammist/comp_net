@@ -3,6 +3,8 @@
 #include <webstur/ip/tcp/http/httpendpoint.h>
 
 bool HTTPEndpoint::matches(const HTTPRequest& message) {
+	// Если метод - HEAD или метод эндпоинта с запросом совпадают а также
+	// расположение запроса совпадает с заданным
 	return (message.getMethod() == HEAD || message.getMethod() == this->method)
 		&& message.matchesPath(this->path);
 }

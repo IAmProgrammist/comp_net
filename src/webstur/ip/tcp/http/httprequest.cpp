@@ -34,6 +34,8 @@ HTTPRequest HTTPRequest::parse(const std::string& message) {
 			result.method = HTTPMethod::POST;
 		else if (method_name == "PATCH")
 			result.method = HTTPMethod::PATCH;
+		else if (method_name == "PUT")
+			result.method = HTTPMethod::PUT;
 		else if (method_name == "DELETE")
 			result.method = HTTPMethod::DEL;
 		else {

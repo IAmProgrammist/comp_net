@@ -5,6 +5,7 @@ enum HTTPMethod {
 	GET,
 	POST,
 	PATCH,
+	PUT,
 	DEL,
 	HEAD,
 };

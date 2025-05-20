@@ -21,7 +21,7 @@ TCPServer::TCPServer(int port) {
 	// Создаём адрес к которому привяжется сокет
 	sockaddr_in bind_addr;
 	bind_addr.sin_family = AF_INET;
-	bind_addr.sin_addr = getDeviceAddrInfo().sin_addr;
+	bind_addr.sin_addr.S_un.S_addr = ADDR_ANY;
 	bind_addr.sin_port = htons(port);
 
 	std::clog << "Binding socket" << std::endl;
